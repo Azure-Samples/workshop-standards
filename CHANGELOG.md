@@ -1,13 +1,10 @@
-## [project-title] Changelog
+# 변경 이력
 
-<a name="x.y.z"></a>
-# x.y.z (yyyy-mm-dd)
+## Unreleased
 
-*Features*
-* ...
+- 워크샵 표준화 제안과 이관 가이드, AI 지시문, 결정 시트와 ruleset 템플릿을 추가했습니다.
+- HTML 이관 안내서와 문서 검증 CI, 수동 Pages 배포 workflow를 추가했습니다.
+- 로컬 실험·백업·의존성·배포 결과물을 Git에서 제외했습니다.
+- 기존 저장소의 커밋 이력, MIT 라이선스, CLA와 행동 강령 안내를 유지했습니다.
 
-*Bug Fixes*
-* ...
-
-*Breaking Changes*
-* ...
+표준 규격은 초안이며, 이번 문서 추가는 표준 버전의 승인을 의미하지 않습니다.
