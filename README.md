@@ -2,7 +2,7 @@
 
 Azure 워크샵의 작성 규칙, 기존 콘텐츠 이관 절차, AI 변환 지시문과 재사용 양식을 관리합니다. 개별 워크샵의 실습 코드와 데이터는 각 워크샵 저장소에 두며, 이 저장소에는 복제하지 않습니다.
 
-저장소는 [Azure-Samples/azure-workshops-korea](https://github.com/Azure-Samples/azure-workshops-korea)입니다. 기존 [MIT 라이선스](LICENSE.md)를 유지합니다.
+저장소는 [Azure-Samples/workshop-standards](https://github.com/Azure-Samples/workshop-standards)입니다. 기존 [MIT 라이선스](LICENSE.md)를 유지합니다.
 
 현재 문서는 초안입니다. 표준화 제안의 권고안과 이미 이관 절차에 적용된 규칙을 구분하고, 차이가 있는 항목은 검토 후 확정합니다.
 
@@ -10,14 +10,14 @@ Azure 워크샵의 작성 규칙, 기존 콘텐츠 이관 절차, AI 변환 지�
 
 | 목적 | 문서 |
 |---|---|
-| 전체 이관 흐름과 빠른 시작 | [HTML 이관 안내서](workshop-migration-howto.html) |
+| 전체 이관 흐름과 빠른 시작 | [HTML 이관 안내서](https://azure-samples.github.io/workshop-standards/) · [HTML 원본](workshop-migration-howto.html) |
 | 표준 규격과 제안 배경 검토 | [표준화 제안과 상세 규격](docs/standards.md) |
 | 단계별 작업과 예외 조건 확인 | [상세 이관 가이드](docs/migration-guide.md) |
 | 이관 전 판단 항목 기록 | [결정 시트 양식](template/decision-sheet.md) |
 | AI에 변환 작업 위임 | [AI 마이그레이션 지시문](prompts/migration.md) |
 | 브랜치 보호 설정 준비 | [ruleset 템플릿](template/rulesets/protect-main.json) |
 
-HTML 안내서는 브라우저에서 직접 열 수 있습니다. GitHub 파일 화면에서는 소스가 표시되므로, 웹페이지로 공유하려면 아래 GitHub Pages 설정을 사용합니다.
+HTML 안내서는 위 GitHub Pages 링크에서 읽을 수 있습니다. HTML 원본은 로컬 브라우저에서 직접 열 수 있으며, GitHub 파일 화면에서는 소스가 표시됩니다. 게시와 갱신 절차는 아래 HTML 안내서 게시 항목을 참고합니다.
 
 표준 규칙은 Markdown에서 검토·개정합니다. HTML은 전체 흐름과 빠른 시작을 안내하고, 상세 규칙과 명령은 Markdown으로 연결합니다. 규칙이 바뀌면 영향을 받는 가이드·지시문·양식을 같은 PR에서 수정합니다.
 
@@ -75,12 +75,12 @@ ruleset 템플릿은 첫 이관용으로 `disabled` 상태를 유지하며 필�
 
 GitHub Settings > Pages에서 Source를 **GitHub Actions**로 지정한 뒤, Actions의 **Publish Guide** workflow를 수동 실행합니다. 워크플로는 `main`에서만 실행되며 검증 후 HTML 안내서 한 파일만 배포합니다. 상세 문서 링크는 해당 배포 커밋의 GitHub 파일 화면으로 연결됩니다. `dry-run/`이나 실행 기록은 배포하지 않습니다.
 
-기본 프로젝트 Pages 주소는 `https://azure-samples.github.io/azure-workshops-korea/`가 됩니다. 아직 배포를 확인한 주소가 아니므로 실제 URL은 배포 결과에서 확인합니다. 저장소 전체를 Pages artifact로 업로드하지 않습니다.
+안내서는 [GitHub Pages](https://azure-samples.github.io/workshop-standards/)에 게시되어 있습니다. 저장소 전체를 Pages artifact로 업로드하지 않습니다.
 
 게시 전 로컬 빌드만 확인하려면 실제 저장소와 ref를 지정합니다.
 
 ```bash
-npm run build:pages -- --repository Azure-Samples/azure-workshops-korea --ref <commit-sha>
+npm run build:pages -- --repository Azure-Samples/workshop-standards --ref <commit-sha>
 ```
 
 생성된 `_site/index.html`이 배포 대상입니다. 원본 HTML의 디자인과 목차를 유지하며, Pretendard와 Mermaid를 불러오려면 인터넷 연결이 필요합니다.

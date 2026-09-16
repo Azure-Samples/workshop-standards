@@ -18,7 +18,7 @@ instructions provided by the bot. You will only need to do this once across all 
 
 ## 이슈와 기능 제안
 
-기존 [이슈](https://github.com/Azure-Samples/azure-workshops-korea/issues)와 [PR](https://github.com/Azure-Samples/azure-workshops-korea/pulls)을 먼저 확인합니다. 문서 오류는 위치와 재현 조건을, 새로운 기능이나 표준 변경은 목적과 영향 범위를 작성합니다. 큰 변경은 구현 전에 이슈로 제안하고 담당자와 범위를 합의합니다.
+기존 [이슈](https://github.com/Azure-Samples/workshop-standards/issues)와 [PR](https://github.com/Azure-Samples/workshop-standards/pulls)을 먼저 확인합니다. 문서 오류는 위치와 재현 조건을, 새로운 기능이나 표준 변경은 목적과 영향 범위를 작성합니다. 큰 변경은 구현 전에 이슈로 제안하고 담당자와 범위를 합의합니다.
 
 ## 변경 범위
 
