@@ -1,74 +1,51 @@
-# Contributing to [project-title]
+# 변경 제안과 검토
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
+이 저장소는 워크샵의 표준과 적용 자료를 관리합니다. 개별 실습의 오류는 해당 워크샵 저장소에 제안합니다.
+
+## Contributor License Agreement
+
+This project welcomes contributions and suggestions. Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
 the rights to use your contribution. For details, visit [Contributor License Agreements](https://cla.opensource.microsoft.com).
 
 When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the
+instructions provided by the bot. You will only need to do this once across all repos using our CLA.
 
- - [Code of Conduct](#coc)
- - [Issues and Bugs](#issue)
- - [Feature Requests](#feature)
- - [Submission Guidelines](#submit)
+## 행동 강령
 
-## <a name="coc"></a> Code of Conduct
-Help us keep this project open and inclusive. Please read and follow our [Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+이 프로젝트는 [Microsoft Open Source Code of Conduct](.github/CODE_OF_CONDUCT.md)를 따릅니다. 기여하기 전에 행동 강령을 확인합니다.
 
-## <a name="issue"></a> Found an Issue?
-If you find a bug in the source code or a mistake in the documentation, you can help us by
-[submitting an issue](#submit-issue) to the GitHub Repository. Even better, you can
-[submit a Pull Request](#submit-pr) with a fix.
+## 이슈와 기능 제안
 
-## <a name="feature"></a> Want a Feature?
-You can *request* a new feature by [submitting an issue](#submit-issue) to the GitHub
-Repository. If you would like to *implement* a new feature, please submit an issue with
-a proposal for your work first, to be sure that we can use it.
+기존 [이슈](https://github.com/Azure-Samples/azure-workshops-korea/issues)와 [PR](https://github.com/Azure-Samples/azure-workshops-korea/pulls)을 먼저 확인합니다. 문서 오류는 위치와 재현 조건을, 새로운 기능이나 표준 변경은 목적과 영향 범위를 작성합니다. 큰 변경은 구현 전에 이슈로 제안하고 담당자와 범위를 합의합니다.
 
-* **Small Features** can be crafted and directly [submitted as a Pull Request](#submit-pr).
+## 변경 범위
 
-## <a name="submit"></a> Submission Guidelines
+표준을 바꿀 때는 기존 규칙, 변경 이유, 영향을 받는 콘텐츠 유형, 기존 워크샵에 필요한 조치를 기록합니다. 아직 결정되지 않은 내용은 초안이나 검토 항목으로 표시하며, 문서 정리만으로 승인된 규칙으로 바꾸지 않습니다.
 
-### <a name="submit-issue"></a> Submitting an Issue
-Before you submit an issue, search the archive, maybe your question was already answered.
+규칙 변경은 [표준 문서](docs/standards.md)를 먼저 수정하고, 영향을 받는 [상세 가이드](docs/migration-guide.md)·[AI 지시문](prompts/migration.md)·[결정 양식](template/decision-sheet.md)을 같은 PR에서 갱신합니다. [HTML 안내서](workshop-migration-howto.html)에는 전체 흐름과 빠른 시작을 유지하며 상세 명령을 중복해서 넣지 않습니다.
 
-If your issue appears to be a bug, and hasn't been reported, open a new issue.
-Help us to maximize the effort we can spend fixing issues and adding new
-features, by not reporting duplicate issues.  Providing the following information will increase the
-chances of your issue being dealt with quickly:
+## 검증
 
-* **Overview of the Issue** - if an error is being thrown a non-minified stack trace helps
-* **Version** - what version is affected (e.g. 0.1.2)
-* **Motivation for or Use Case** - explain what are you trying to do and why the current behavior is a bug for you
-* **Browsers and Operating System** - is this a problem with all browsers?
-* **Reproduce the Error** - provide a live example or a unambiguous set of steps
-* **Related Issues** - has a similar issue been reported before?
-* **Suggest a Fix** - if you can't fix the bug yourself, perhaps you can point to what might be
-  causing the problem (line of code or commit)
+Node.js 22 이상과 Git을 준비한 뒤 다음 명령을 실행합니다.
 
-You can file new issues by providing the above information at the corresponding repository's issues link: 
-replace`[organization-name]` and `[repository-name]` in
-`https://github.com/[organization-name]/[repository-name]/issues/new` .
+```bash
+npm ci
+npm test
+npm run validate
+```
 
-### <a name="submit-pr"></a> Submitting a Pull Request (PR)
-Before you submit your Pull Request (PR) consider the following guidelines:
+HTML이나 Pages 빌드를 수정했다면 데스크톱·모바일 화면에서 목차와 링크를 확인합니다. Pages artifact에는 HTML 안내서만 포함해야 합니다. 상세 Markdown 링크는 배포 커밋의 GitHub 파일 화면으로 연결합니다.
 
-* Search the repository's [pull requests](https://github.com/[organization-name]/[repository-name]/pulls) for an open or closed PR
-  that relates to your submission. You don't want to duplicate effort.
+검증기는 공유 경로를 명시적으로 제한합니다. 새로운 최상위 경로를 추가하면 검증기의 공개 대상 목록과 테스트를 함께 검토합니다. `dry-run/`이나 실제 실행 기록을 검사에 포함시키기 위해 제외 규칙을 해제하지 않습니다.
 
-* Make your changes in a new git fork:
+외부 URL의 접근성, 조직의 게시 승인, 워크샵 E2E 실행과 시크릿 검사는 문서 링크 검사를 통과했다고 완료되는 항목이 아닙니다. 공개 전에는 게시할 파일과 Git 이력을 별도로 점검합니다.
 
-* Commit your changes using a descriptive commit message
-* Push your fork to GitHub:
-* In GitHub, create a pull request
-* If we suggest changes then:
-  * Make the required updates.
-  * Rebase your fork and force push to your GitHub repository (this will update your Pull Request):
+## PR 검토
 
-    ```shell
-    git rebase main -i
-    git push -f
-    ```
+변경 목적과 범위, 검증 결과, 남은 판단 항목을 PR에 기록합니다. 표준·라이선스·콘텐츠 삭제·이력 변경은 담당자의 확인 없이 확정하지 않습니다. 스크린샷이나 로그에 키·토큰·실제 고객 데이터·내부 심사 식별자를 포함하지 않습니다.
 
-That's it! Thank you for your contribution!
+실제 결정 시트와 실행 기록은 `local-only/` 또는 `dry-run/`에 보관합니다. Git 추적 여부도 확인하며, `.gitignore`가 과거 커밋까지 제거한다고 가정하지 않습니다.
+
+표준 버전을 배포할 때는 별도 승인 후 태그와 변경 이력을 남깁니다. 현재 `package.json` 버전은 검증 도구용이며, 표준 v1.0 승인을 의미하지 않습니다.
