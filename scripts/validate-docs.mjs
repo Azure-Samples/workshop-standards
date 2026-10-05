@@ -32,7 +32,7 @@ export function publicPaths(directory = root, prefix = '') {
   });
 }
 
-function document(source, extension) {
+export function parseDocument(source, extension) {
   let body = source.replace(/^\uFEFF/, '').replaceAll('\r\n', '\n');
   if (extension === '.md' && body.startsWith('---\n')) {
     const end = body.indexOf('\n---\n', 4);
@@ -78,7 +78,7 @@ export function validateDocs(directory = root) {
     try {
       const extension = path.extname(file);
       const source = readFileSync(path.join(directory, file), 'utf8');
-      if (['.md', '.html'].includes(extension)) documents.set(file, document(source, extension));
+      if (['.md', '.html'].includes(extension)) documents.set(file, parseDocument(source, extension));
       if (['.yml', '.yaml'].includes(extension)) parseYaml(source);
       if (extension === '.json') JSON.parse(source);
     } catch (error) {

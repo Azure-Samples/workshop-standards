@@ -15,9 +15,12 @@ Azure 워크샵의 작성 규칙, 기존 콘텐츠 이관 절차, AI 변환 지�
 | 단계별 작업과 예외 조건 확인 | [상세 이관 가이드](docs/migration-guide.md) |
 | 이관 전 판단 항목 기록 | [결정 시트 양식](template/decision-sheet.md) |
 | AI에 변환 작업 위임 | [AI 마이그레이션 지시문](prompts/migration.md) |
+| skill로 신규 생성·기존 표준화 | [skill 설치와 사용](docs/skill-guide.md) · [skill 원본](.github/skills/workshop-standardization/SKILL.md) |
 | 브랜치 보호 설정 준비 | [ruleset 템플릿](template/rulesets/protect-main.json) |
 
-HTML 안내서는 위 GitHub Pages 링크에서 읽을 수 있습니다. HTML 원본은 로컬 브라우저에서 직접 열 수 있으며, GitHub 파일 화면에서는 소스가 표시됩니다. 게시와 갱신 절차는 아래 HTML 안내서 게시 항목을 참고합니다.
+HTML 안내서는 위 GitHub Pages 링크에서 읽을 수 있습니다. 처음 이관한다면 안내서의 분석 요청문을 복사해 기존 저장소를 연 AI 에이전트에 전달합니다. 첫 요청은 파일을 바꾸지 않는 분석이며, 권고안 확인 → 변환 결과 검토 → 실습 검증과 공개 순서로 진행합니다. 실제 변환 전에는 AI 지시문과 연결된 참고 문서를 에이전트가 읽을 수 있게 제공합니다.
+
+HTML 원본은 로컬 브라우저에서 직접 열 수 있으며, GitHub 파일 화면에서는 소스가 표시됩니다. 게시와 갱신 절차는 아래 HTML 안내서 게시 항목을 참고합니다.
 
 표준 규칙은 Markdown에서 검토·개정합니다. HTML은 전체 흐름과 빠른 시작을 안내하고, 상세 규칙과 명령은 Markdown으로 연결합니다. 규칙이 바뀌면 영향을 받는 가이드·지시문·양식을 같은 PR에서 수정합니다.
 
@@ -38,11 +41,14 @@ template/
 scripts/
 tests/
 .github/
+  skills/workshop-standardization/
   workflows/
 dry-run/                              # 로컬 전용, Git 제외
 ```
 
-표준 제안서의 부록에 README·랩 문서·AGENTS.md 구성 예시가 있습니다. 실제 복사용 템플릿 파일은 현재 결정 시트와 ruleset만 있으며, 나머지는 규격 검토 후 추가합니다. 이 저장소 전체를 새 워크샵의 GitHub template repository로 사용하지 않습니다.
+표준 제안서의 부록에 README·랩 문서·AGENTS.md 구성 예시가 있습니다. 결정 시트와 ruleset 외에 skill의 assets에 README·랩·AGENTS·노트북·devcontainer 작성용 골격을 제공합니다. 제품별 실습과 완성된 거버넌스·배포 문안은 포함하지 않습니다. 이 저장소 전체를 새 워크샵의 GitHub template repository로 사용하지 않습니다.
+
+skill은 신규 생성과 기존 표준화를 지원합니다. `npm run build:skill`로 참고 문서를 포함한 번들을 만들고 대상 에이전트의 skill 경로에 설치합니다. 시작 요청문은 설치 없이 분석만 요청하는 경로로 유지합니다. [사용 가이드](docs/skill-guide.md)에 두 방식의 차이, 설치와 요청 예시가 있습니다.
 
 ## 로컬 작업과 검증
 

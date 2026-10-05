@@ -99,7 +99,7 @@ validated_on:
 
 **8. 실행 환경 (A형 면제).** `.devcontainer/devcontainer.json`이 없으면 리포의 언어·의존성에 맞게 추가하고, README 상단에 Open in Codespaces 뱃지를 넣는다. 의존성 버전이 고정되어 있지 않으면(requirements.txt 버전 미지정 등) 현재 동작 버전으로 고정한다.
 
-**9. 라이선스·거버넌스 파일.** LICENSE(MIT), LICENSE-DOCS(CC BY-SA 4.0), SECURITY.md, CODE_OF_CONDUCT.md, SUPPORT.md를 확인·추가한다. 문안은 허브 리포 `template/`의 것을 쓴다. 포털이 리포를 만들 때 이 파일들을 넣어 주지 않으므로 다섯 파일 모두 여기서 갖춘다. `source`가 localized면 README에 원본 출처 절을 추가한다.
+**9. 라이선스·거버넌스 파일.** LICENSE(MIT), LICENSE-DOCS(CC BY-SA 4.0), SECURITY.md, CODE_OF_CONDUCT.md, SUPPORT.md를 확인·추가한다. 문안은 허브 리포의 승인된 템플릿을 사용한다. 이 표준 저장소와 skill의 작성용 골격에는 다섯 파일의 완성 문안이 없으므로, 누락되면 필요한 동의와 공식 원문·조직 승인 문안을 확인한다. 문안을 확보하지 못하면 임의로 정책이나 연락처를 만들지 않고 보류 사항으로 보고하며 공개 준비 완료로 표시하지 않는다. 포털이 리포를 만들 때 이 파일들을 넣어 주지 않으므로 게시 전에 모두 갖춘다. `source`가 localized면 README에 원본 출처 절을 추가한다.
 
 **10. AGENTS.md 배치.** 표준 4개 섹션(리포 규칙 / 콘텐츠·노트북 스타일 가이드 / 검증 하네스 / 백로그·DO NOT)으로 작성한다. 검증 하네스 섹션에는 아래 하네스 명령을 그대로 옮겨, 이후 이 리포에서 작업하는 모든 에이전트가 같은 기준으로 검증하게 한다. 파일럿 리포(https://github.com/kyungtaak/AzureAIFoundryWorkshop-Code/tree/standard-v2)의 AGENTS.md를 구조 참고용으로 삼는다.
 

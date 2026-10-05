@@ -138,7 +138,7 @@ filter-repo는 지정 폴더 밖의 이력을 전부 제거하지만, 해당 폴
 - 노트북 출력·execution_count 제거: 유형과 관계없이 모든 ipynb에 적용. md 안내서 페어링 구조 생성은 B·C형에만 적용
 - `.devcontainer` 추가와 "Open in Codespaces" 뱃지 (A형 포털 전용 리포는 면제)
 - AGENTS.md 배치 (부록 D 표준 4개 섹션: 리포 규칙, 스타일 가이드, 검증 하네스, 백로그·DO NOT)
-- 거버넌스 파일 추가: LICENSE(MIT) 확인, LICENSE-DOCS(CC BY-SA 4.0)·SECURITY.md·CODE_OF_CONDUCT.md·SUPPORT.md를 허브 리포 템플릿 문안으로 추가 — 포털이 리포를 만들 때 넣어 주지 않으므로 여기서 전부 갖춤
+- 거버넌스 파일 추가: LICENSE(MIT) 확인, LICENSE-DOCS(CC BY-SA 4.0)·SECURITY.md·CODE_OF_CONDUCT.md·SUPPORT.md를 승인된 문안으로 추가 — 이 저장소와 skill의 골격에는 완성 문안이 없으므로 공식 원문·조직 문안과 필요한 동의를 별도로 확인합니다. 확보하지 못하면 보류하고 공개 준비 완료로 표시하지 않습니다. 포털이 리포를 만들 때 넣어 주지 않으므로 게시 전에 전부 갖춥니다.
 - 이미지 에셋을 `assets/` 하위로 정리하고 alt-text 없는 이미지에 alt-text 추가
 - 내부 산출물(결정 시트에서 제외로 정한 경로) 삭제
 
