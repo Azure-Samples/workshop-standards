@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { zipSync } from 'fflate';
 import { parse as parseYaml } from 'yaml';
 import { parseDocument, root, validateDocs } from './validate-docs.mjs';
 
@@ -122,9 +123,24 @@ export function buildSkill({ directory = root } = {}) {
   return output;
 }
 
+export function buildSkillArchive({ directory = root } = {}) {
+  const output = buildSkill({ directory });
+  const manifest = JSON.parse(readFileSync(path.join(output, 'manifest.json'), 'utf8'));
+  const entries = Object.fromEntries([...Object.keys(manifest.files), 'manifest.json'].map(file => [
+    `${skillName}/${file}`,
+    [new Uint8Array(readFileSync(path.join(output, file))), { mtime: new Date(1980, 0, 1) }],
+  ]));
+  const archive = path.join(path.dirname(output), `${skillName}.zip`);
+  if (existsSync(archive) && (!lstatSync(archive).isFile() || lstatSync(archive).isSymbolicLink())) {
+    throw new Error('Skill ZIP output must be a regular file.');
+  }
+  writeFileSync(archive, zipSync(entries, { level: 9 }));
+  return archive;
+}
+
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
-    console.log(`PASS: portable skill at ${buildSkill()}`);
+    console.log(`PASS: portable skill ZIP at ${buildSkillArchive()}`);
   } catch (error) {
     console.error(error.message);
     process.exitCode = 1;
