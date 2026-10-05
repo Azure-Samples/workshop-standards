@@ -48,7 +48,7 @@ dry-run/                              # 로컬 전용, Git 제외
 
 표준 제안서의 부록에 README·랩 문서·AGENTS.md 구성 예시가 있습니다. 결정 시트와 ruleset 외에 skill의 assets에 README·랩·AGENTS·노트북·devcontainer 작성용 골격을 제공합니다. 제품별 실습과 완성된 거버넌스·배포 문안은 포함하지 않습니다. 이 저장소 전체를 새 워크샵의 GitHub template repository로 사용하지 않습니다.
 
-skill은 신규 생성과 기존 표준화를 지원합니다. `npm run build:skill`로 참고 문서를 포함한 번들을 만들고 대상 에이전트의 skill 경로에 설치합니다. 시작 요청문은 설치 없이 분석만 요청하는 경로로 유지합니다. [사용 가이드](docs/skill-guide.md)에 두 방식의 차이, 설치와 요청 예시가 있습니다.
+skill은 신규 생성과 기존 표준화를 지원합니다. 사용자는 [설치 가이드](docs/skill-guide.md)에서 GitHub Releases의 설치용 ZIP을 내려받아 압축을 풀고 skill 폴더를 복사하면 됩니다. Git·Node.js·npm은 skill 설치에 필요하지 않습니다. 시작 요청문은 설치 없이 분석만 요청하는 경로로 유지합니다. 배포 담당자의 빌드·검증 절차는 [ZIP 배포 가이드](docs/skill-release.md)에 따로 정리했습니다.
 
 ## 로컬 작업과 검증
 

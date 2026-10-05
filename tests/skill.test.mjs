@@ -4,8 +4,9 @@ import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdir
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
+import { unzipSync } from 'fflate';
 import { parse as parseYaml } from 'yaml';
-import { buildSkill, skillDirectory, skillName, validateSkillMetadata } from '../scripts/build-skill.mjs';
+import { buildSkill, buildSkillArchive, skillDirectory, skillName, validateSkillMetadata } from '../scripts/build-skill.mjs';
 import { publicPaths, root, validateDocs } from '../scripts/validate-docs.mjs';
 
 function fixture(context, copySource = false) {
@@ -95,6 +96,46 @@ test('bundle fails on missing source references before creating output', context
   rmSync(path.join(directory, 'prompts', 'migration.md'));
   assert.throws(() => buildSkill({ directory }), /Missing public target/);
   assert.equal(existsSync(path.join(directory, 'local-only', 'skill-dist', skillName)), false);
+});
+
+test('install ZIP contains one skill folder with exactly the verified bundle bytes', context => {
+  const directory = fixture(context, true);
+  const archive = buildSkillArchive({ directory });
+  const original = readFileSync(archive);
+  const files = unzipSync(original);
+  assert.equal(Object.keys(files).length, 16);
+  const manifest = JSON.parse(Buffer.from(files[`${skillName}/manifest.json`]).toString('utf8'));
+  assert.deepEqual(Object.keys(files).sort(), [...Object.keys(manifest.files), 'manifest.json']
+    .map(file => `${skillName}/${file}`).sort());
+  const portable = fixture(context);
+  for (const [entry, contents] of Object.entries(files)) {
+    assert.ok(entry.startsWith(`${skillName}/`) && !entry.includes('..') && !entry.includes('\\'), entry);
+    const file = entry.slice(skillName.length + 1);
+    const expected = readFileSync(path.join(path.dirname(archive), skillName, file));
+    assert.deepEqual(Buffer.from(contents), expected, file);
+    if (file !== 'manifest.json') {
+      assert.equal(createHash('sha256').update(contents).digest('hex'), manifest.files[file], file);
+    }
+    const destination = path.join(portable, 'docs', entry);
+    mkdirSync(path.dirname(destination), { recursive: true });
+    writeFileSync(destination, contents);
+  }
+  assert.deepEqual(validateDocs(portable).errors, []);
+  buildSkillArchive({ directory });
+  assert.deepEqual(readFileSync(archive), original);
+});
+
+test('ZIP creation refuses an unexpected file in the bundle or a directory at the ZIP path', context => {
+  const directory = fixture(context, true);
+  const output = buildSkill({ directory });
+  writeFileSync(path.join(output, 'private-notes.txt'), 'keep this file');
+  assert.throws(() => buildSkillArchive({ directory }), /Unexpected output file/);
+  const archive = path.join(path.dirname(output), `${skillName}.zip`);
+  assert.equal(existsSync(archive), false);
+  rmSync(path.join(output, 'private-notes.txt'));
+  mkdirSync(archive);
+  assert.throws(() => buildSkillArchive({ directory }), /regular file/);
+  assert.ok(existsSync(archive));
 });
 
 test('bundle refuses unknown output files and unmanaged directories without overwriting', context => {
