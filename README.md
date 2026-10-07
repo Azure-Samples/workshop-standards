@@ -18,7 +18,7 @@ Azure 워크샵의 작성 규칙, 기존 콘텐츠 이관 절차, AI 변환 지�
 | skill로 신규 생성·기존 표준화 | [skill 설치와 사용](docs/skill-guide.md) · [skill 원본](.github/skills/workshop-standardization/SKILL.md) |
 | 브랜치 보호 설정 준비 | [ruleset 템플릿](template/rulesets/protect-main.json) |
 
-HTML 안내서는 위 GitHub Pages 링크에서 읽을 수 있습니다. 처음 이관한다면 안내서의 분석 요청문을 복사해 기존 저장소를 연 AI 에이전트에 전달합니다. 첫 요청은 파일을 바꾸지 않는 분석이며, 권고안 확인 → 변환 결과 검토 → 실습 검증과 공개 순서로 진행합니다. 실제 변환 전에는 AI 지시문과 연결된 참고 문서를 에이전트가 읽을 수 있게 제공합니다.
+HTML 안내서는 위 GitHub Pages 링크에서 읽을 수 있습니다. 처음 이관한다면 [워크샵 표준화 skill](docs/skill-guide.md)을 설치하고 기존 저장소를 연 AI 에이전트에서 사용합니다. skill은 필요한 지침과 참고 자료를 포함하며, 첫 작업은 파일을 바꾸지 않는 분석입니다. 권고안 확인 → 변환 결과 검토 → 실습 검증과 공개 순서로 진행합니다.
 
 HTML 원본은 로컬 브라우저에서 직접 열 수 있으며, GitHub 파일 화면에서는 소스가 표시됩니다. 게시와 갱신 절차는 아래 HTML 안내서 게시 항목을 참고합니다.
 
@@ -48,7 +48,7 @@ dry-run/                              # 로컬 전용, Git 제외
 
 표준 제안서의 부록에 README·랩 문서·AGENTS.md 구성 예시가 있습니다. 결정 시트와 ruleset 외에 skill의 assets에 README·랩·AGENTS·노트북·devcontainer 작성용 골격을 제공합니다. 제품별 실습과 완성된 거버넌스·배포 문안은 포함하지 않습니다. 이 저장소 전체를 새 워크샵의 GitHub template repository로 사용하지 않습니다.
 
-skill은 신규 생성과 기존 표준화를 지원합니다. 사용자는 [설치 가이드](docs/skill-guide.md)에서 GitHub Releases의 설치용 ZIP을 내려받아 압축을 풀고 skill 폴더를 복사하면 됩니다. Git·Node.js·npm은 skill 설치에 필요하지 않습니다. 시작 요청문은 설치 없이 분석만 요청하는 경로로 유지합니다. 배포 담당자의 빌드·검증 절차는 [ZIP 배포 가이드](docs/skill-release.md)에 따로 정리했습니다.
+skill은 신규 생성과 기존 표준화를 지원합니다. [설치 가이드](docs/skill-guide.md)에 따라 `npx skills add`에 GitHub Releases의 설치용 ZIP URL을 지정해 설치하는 방법을 권장합니다. 참고 문서가 빠지지 않도록 저장소 이름 대신 배포 ZIP URL을 사용합니다. Node.js·npm 없이 설치하려면 ZIP을 내려받아 압축을 풀고 skill 폴더를 복사할 수 있습니다. 설치와 인식 확인을 마친 뒤 skill로 분석·계획을 시작합니다. 배포 담당자의 빌드·검증 절차는 [ZIP 배포 가이드](docs/skill-release.md)에 따로 정리했습니다.
 
 ## 로컬 작업과 검증
 

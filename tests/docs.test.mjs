@@ -70,6 +70,20 @@ test('tracked local files fail even if an ignore rule would hide new files', con
   assert.equal(validateTrackedPaths(directory).errors.length, 1);
 });
 
+test('guide starts with skill installation instead of a standalone analysis prompt', () => {
+  const source = readFileSync(path.join(root, 'workshop-migration-howto.html'), 'utf8');
+  const page = load(source);
+  assert.equal(page('#s1 h2').text(), '시작 · skill 설치');
+  assert.equal(page('#toc a[href="#s1"]').text(), page('#s1 h2').text());
+  assert.equal(page('#s1 .action').attr('href'), 'docs/skill-guide.md');
+  assert.equal(page('#s1 .action').text(), 'skill 설치와 사용');
+  assert.equal(page('#s1 .step').length, 3);
+  assert.match(page('#s1').text(), /workshop-standardization/);
+  assert.match(page('#s1').text(), /첫 작업은 분석만 진행/);
+  assert.equal(page('#s1 pre, #s1 button').length, 0);
+  assert.doesNotMatch(source, /start-prompt|copy-prompt|copy-status|navigator\.clipboard|분석 요청문|설치 없이/);
+});
+
 test('Pages builds only the guide and pins document links to the specified revision', context => {
   const directory = fixture(context, {
     'README.md': '# Home\n',
