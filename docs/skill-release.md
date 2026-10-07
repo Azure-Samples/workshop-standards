@@ -1,6 +1,6 @@
 # Skill ZIP 빌드와 배포
 
-이 문서는 배포 담당자용입니다. 사용자는 [설치 가이드](skill-guide.md)의 ZIP을 내려받으면 되며 저장소 clone이나 빌드를 하지 않습니다.
+이 문서는 배포 담당자용입니다. 사용자는 [설치 가이드](skill-guide.md)에 따라 배포 ZIP URL을 `npx skills add`에 지정하거나 ZIP을 내려받아 수동 설치합니다. 저장소를 직접 clone하거나 빌드할 필요는 없습니다.
 
 ## 빌드와 검증
 
@@ -25,7 +25,7 @@ ZIP에는 `workshop-standardization` 폴더 하나가 있고 그 안에 SKILL.md
 
 첫 배포의 태그는 `workshop-skill-v0.1.0-preview.1`, asset 이름은 `workshop-standardization.zip`입니다. 새 배포에는 새 태그를 사용하며 기존 배포 파일을 바꾸지 않습니다. 배포 설명에 포함 범위, 검증 결과와 아직 수행하지 않은 검증을 기록합니다.
 
-배포 후 ZIP을 실제로 내려받아 로컬 산출물과 SHA-256이 같은지 확인합니다. 설치 가이드의 버전별 다운로드 링크를 갱신하고, HTML 안내서에서 최신 문서가 열리도록 Pages를 다시 게시합니다.
+배포 후 ZIP을 실제로 내려받아 로컬 산출물과 SHA-256이 같은지 확인합니다. 설치 가이드의 CLI 명령에 들어 있는 ZIP URL과 수동 다운로드·배포 페이지 링크를 새 버전으로 함께 갱신합니다. HTML 안내서에서 최신 문서가 열리도록 Pages를 다시 게시합니다.
 
 GitHub의 자동 `Source code (zip)`은 설치용 번들이 아닙니다. 사용자에게는 Assets의 `workshop-standardization.zip`을 안내하세요.
 
