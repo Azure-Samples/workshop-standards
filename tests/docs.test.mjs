@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import { load } from 'cheerio';
+import { parse as parseYaml } from 'yaml';
 import { buildPages } from '../scripts/build-pages.mjs';
 import { isPublicPath, root, validateDocs, validateTrackedPaths } from '../scripts/validate-docs.mjs';
 
@@ -82,6 +83,97 @@ test('guide starts with skill installation instead of a standalone analysis prom
   assert.match(page('#s1').text(), /첫 작업은 분석만 진행/);
   assert.equal(page('#s1 pre, #s1 button').length, 0);
   assert.doesNotMatch(source, /start-prompt|copy-prompt|copy-status|navigator\.clipboard|분석 요청문|설치 없이/);
+});
+
+test('publishing requires approval and E2E without automatic visibility rollback claims', () => {
+  const guide = readFileSync(path.join(root, 'docs', 'migration-guide.md'), 'utf8');
+  assert.doesNotMatch(guide, /자동으로 private으로 되돌|포털이 되돌릴|승인 전에 눌렀다면/);
+  assert.match(guide, /실행 검증을 마치고 워크아이템 승인을 확인한 뒤/);
+  assert.doesNotMatch(guide, /git push azs origin\//);
+  assert.doesNotMatch(guide, /git commit -m "Initial import"/);
+  assert.match(guide, /현재 파일 검사·저자 검토 후 첫 커밋/);
+  assert.match(guide, /카탈로그 PoC의 규약이며 이 표준 저장소에는 미구현/);
+});
+
+test('migration instructions keep every step and call the shared nine-check implementation', () => {
+  const source = readFileSync(path.join(root, 'prompts', 'migration.md'), 'utf8').replaceAll('\r\n', '\n');
+  for (let step = 1; step <= 11; step++) {
+    assert.ok(source.includes(`**${step}. `), `Missing migration step ${step}`);
+  }
+  for (let check = 1; check <= 9; check++) {
+    assert.ok(source.includes(`python3 scripts/workshop_checks.py ${check}\n`), `Missing check ${check}`);
+  }
+  assert.match(source, /set -e/);
+  assert.match(source, /검사 1~3의 기본 범위는 working tree와 로컬 전체 refs의 이력/);
+  assert.doesNotMatch(source, /grep -v '<your/);
+});
+
+test('standalone input carries decisions without implying plan approval', () => {
+  const source = readFileSync(path.join(root, 'prompts', 'migration.md'), 'utf8');
+  const sheet = readFileSync(path.join(root, 'template', 'decision-sheet.md'), 'utf8');
+  const match = /## 입력\s+```yaml\r?\n([\s\S]*?)```/.exec(source);
+  assert.ok(match, 'Missing standalone YAML input');
+  const input = parseYaml(match[1]);
+  for (const key of [
+    'migration_scope', 'source_path', 'work_folder', 'history_policy', 'license_policy',
+    'plan_approved', 'repo_type', 'exclude_paths', 'old_repo_url',
+  ]) {
+    assert.ok(Object.hasOwn(input, key), `Missing input: ${key}`);
+    if (['migration_scope', 'source_path', 'work_folder', 'history_policy', 'license_policy', 'plan_approved'].includes(key)) {
+      assert.ok(sheet.includes(key), `Missing sheet mapping: ${key}`);
+    }
+  }
+  assert.equal(input.plan_approved, null);
+  for (const key of ['current', 'code', 'docs', 'scope', 'consent', 'consent_basis']) {
+    assert.ok(Object.hasOwn(input.license_policy, key), `Missing license decision: ${key}`);
+    assert.equal(input.license_policy[key], null);
+    assert.ok(sheet.includes(`license_policy.${key}`) || sheet.includes(`${key}:`), `Missing license mapping: ${key}`);
+  }
+  assert.doesNotMatch(source, /완전히 채워져 있으면 질문 없이 진행/);
+  assert.match(source, /필수 결정값과 실제 계획 승인이 확인된 경우에만/);
+  assert.match(source, /없거나 false이거나 저자의 실제 승인 근거가 없으면 읽기 전용 분석/);
+  assert.match(source, /보안 점검에서 실노출이 발견되면 승인값이 있어도 즉시 중단/);
+  assert.match(source, /계획 승인은 도구 설치·라이선스 전환·원격 게시·공개 전환을 자동으로 승인하지 않는다/);
+  assert.match(source, /`exclude_paths: \[\]`는 저자가 제외 대상이 없다고 확정한 값/);
+});
+
+test('license example preserves README MIT notice and records actual consent requirements', () => {
+  const sheet = readFileSync(path.join(root, 'template', 'decision-sheet.md'), 'utf8');
+  const example = sheet.split('## 기입 예시')[1];
+  assert.ok(example);
+  assert.doesNotMatch(sheet, /MIT 외 라이선스는 전환 동의 필요|없음 → MIT \+ CC BY-SA|신규 추가로 해결/);
+  assert.match(sheet, /기존 MIT 문서의 CC BY-SA 적용도 필요한 동의 확인/);
+  assert.match(example, /current: README MIT 고지/);
+  assert.match(example, /기존 고지와 코드·문서 적용 범위 확인·보존/);
+  assert.match(example, /consent: completed/);
+  assert.match(example, /문서 CC BY-SA 적용에 필요한 저자 동의 완료/);
+  assert.match(example, /plan_approved: false/);
+  assert.match(sheet, /파일 부재·1인 저작만으로 해당 없음으로 처리하지 않음/);
+});
+
+test('E2E timing and learner-facing metadata guidance agree across workflow documents', () => {
+  const sheet = readFileSync(path.join(root, 'template', 'decision-sheet.md'), 'utf8');
+  const guide = readFileSync(path.join(root, 'docs', 'migration-guide.md'), 'utf8');
+  const standards = readFileSync(path.join(root, 'docs', 'standards.md'), 'utf8');
+  assert.doesNotMatch(sheet, /Phase 5에서 기입/);
+  assert.match(sheet, /E2E 검증 완료일.*Phase 6-4에서 기입/);
+  assert.match(guide, /Phase 5는 자동 검사와 변경 리뷰 단계이며 E2E 검증일을 임의로 기록하지 않습니다/);
+  assert.match(guide, /최종 콘텐츠와 선언한 환경·완주 범위/);
+  assert.match(standards, /검증일 기록 시점은 상세 가이드 Phase 6-4/);
+  const page = load(readFileSync(path.join(root, 'workshop-migration-howto.html'), 'utf8'));
+  assert.match(page('#s2').text(), /입력값 기입만으로 승인이 되지는 않습니다/);
+  assert.match(page('#s3').text(), /완주일은 Phase 6-4에서 사람이 제공합니다/);
+  for (const file of [
+    path.join(root, '.github', 'skills', 'workshop-standardization', 'SKILL.md'),
+    path.join(root, '.github', 'skills', 'workshop-standardization', 'references', 'create.md'),
+    path.join(root, 'prompts', 'migration.md'),
+  ]) {
+    const source = readFileSync(file, 'utf8');
+    assert.match(source, /`status`·`validated_on`의 상태·검증일 반복 설명/);
+    assert.match(source, /제목·소요 시간·실행 환경처럼 수강자에게 필요한 안내/);
+    assert.doesNotMatch(source, /frontmatter 값\(`status`, `validated_on` 등\)을 다시 서술하지/);
+    assert.doesNotMatch(source, /frontmatter에 이미 있는 값\(`status`, `validated_on` 등\)을 다시 설명/);
+  }
 });
 
 test('Pages builds only the guide and pins document links to the specified revision', context => {

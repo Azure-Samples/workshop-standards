@@ -16,7 +16,7 @@
 
 <!-- TODO: 생성 시 AI 변환 지시문의 워크샵 검사 명령 9종을 그대로 삽입 -->
 
-검사 환경은 Bash 기반 devcontainer 또는 Git Bash다. gitleaks 8.19 이상, Python 3.10 이상과 YAML 검사에 필요한 PyYAML을 준비한다. 설치·업데이트는 승인받고, 도구가 없어 실행하지 못한 검사는 미실행으로 보고한다.
+검사 환경은 Bash 기반 devcontainer 또는 Git Bash다. gitleaks 8.19 이상, Python 3.10 이상과 `scripts/requirements-workshop.txt`의 검사 의존성을 준비한다. `scripts/workshop_checks.py`를 이 저장소에 함께 둔다. 설치·업데이트는 승인받고, 도구가 없어 실행하지 못한 검사는 미실행으로 보고한다. 검사 1~3은 현재 파일과 전체 이력을 검사하며, Git 이력이 없는 신규 골격은 `--scope tree`로 현재 파일만 검사하고 이력 검사는 미실행으로 보고한다.
 
 ## 백로그·DO NOT
 

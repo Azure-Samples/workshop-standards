@@ -201,7 +201,7 @@
       <p>저자는 판단과 검토, 실습 검증을 맡고 반복 변환과 자동 검사는 AI에 맡깁니다. 등록·심사·등재 절차가 익숙하지 않다면 게시 전에 공동 오너나 팀 카탈로그 담당자에게 함께 확인해 달라고 요청하세요. 게시 권한과 최종 승인은 별도로 확인해야 합니다.</p>
       <div class="steps">
         <div class="step"><div class="n">1</div><div class="txt"><b>분석 초안 확인.</b> 저장소 주소, 이관 범위와 콘텐츠 유형을 확인합니다. 제외 파일, 이력 처리와 라이선스는 근거를 검토해 확정합니다. 모르는 항목은 확인 필요로 남기고, 삭제나 이력 변경을 먼저 승인하지 않습니다.</div></div>
-        <div class="step"><div class="n">2</div><div class="txt"><b>변환 요청과 결과 검토.</b> 확정한 초안을 전달하고 skill에 포함된 지침에 따라 변환을 요청합니다. 보안 점검 이후 승인한 범위만 변환하게 합니다. 단계별 변경 요약과 로컬 diff, 자동 검사 9종의 통과 증빙을 확인하고 소요 시간·정리 절차 등 TODO를 채웁니다.</div></div>
+        <div class="step"><div class="n">2</div><div class="txt"><b>변환 요청과 결과 검토.</b> 범위·작업 폴더·이력·라이선스와 동의 근거를 확정하고 실제 작업 계획을 승인합니다. 입력값 기입만으로 승인이 되지는 않습니다. 보안 점검 이후 승인한 범위만 변환하게 합니다. 단계별 변경 요약과 로컬 diff, 자동 검사 9종의 통과 증빙을 확인하고 소요 시간·정리 절차 등 TODO를 채웁니다.</div></div>
         <div class="step"><div class="n">3</div><div class="txt"><b>실습 검증과 공개 확인.</b> Private 저장소에 게시한 뒤 Codespaces에서 실습을 처음부터 끝까지 완주합니다. 포털형은 실제 포털에서 검증합니다. 검증일을 기록하고 심사 승인을 확인한 뒤 공개·등재합니다. 상세 설정은 <a href="#s3">전체 절차와 게시 안내</a>에서 확인합니다.</div></div>
       </div>
       <h3>skill에 포함된 참고 자료</h3>
@@ -227,17 +227,18 @@ flowchart LR
       </div>
       <div class="steps">
         <div class="step"><div class="n">1</div><div class="txt"><b>Phase 0 · 사전 결정 (선택).</b> 이관 범위와 처리 방침을 결정 시트에 미리 기록합니다. 생략하면 Phase 1에서 에이전트의 권고안을 검토해 확정할 수 있습니다.</div></div>
-        <div class="step"><div class="n">2</div><div class="txt"><b>Phase 1 · AI 실행과 결정 확정.</b> 저자가 결정 시트를 확정합니다. 시트가 없으면 AI가 리포를 분석해 전체 항목의 권고값과 근거를 제시합니다.</div></div>
+        <div class="step"><div class="n">2</div><div class="txt"><b>Phase 1 · AI 실행과 결정 확정.</b> 저자가 결정값과 실제 작업 계획을 승인합니다. 필수 결정값이나 승인이 없으면 분석·계획만 진행합니다. 독립 지시문에도 같은 조건을 적용하며 시트가 없으면 AI가 전체 항목의 권고값과 근거를 제시합니다.</div></div>
         <div class="step"><div class="n">3</div><div class="txt"><b>Phase 2 · 보안 점검.</b> AI가 커밋 이력 전체에서 시크릿, 개인 리소스 식별자, 노트북 출력을 스캔하고 저자가 결과를 판정합니다. 이 검사는 생략할 수 없습니다.</div></div>
         <div class="step"><div class="n">4</div><div class="txt"><b>Phase 3 · 콘텐츠 이관 준비 (로컬).</b> 확정한 이력 보존·스쿼시·서브폴더 추출 방침에 따라 AI가 새 리포를 준비합니다. 아직 원격 push는 하지 않습니다.</div></div>
-        <div class="step"><div class="n">5</div><div class="txt"><b>Phase 4 · 표준 적용.</b> AI가 경로, 문서와 랩 구조, 노트북, 실행 환경, 거버넌스 파일에 표준을 적용합니다.</div></div>
-        <div class="step"><div class="n">6</div><div class="txt"><b>Phase 5 · 검증과 리뷰.</b> 하네스 9종을 모두 통과했는지 확인합니다. 저자는 변경 요약과 로컬 diff를 검토하고 남은 TODO를 채웁니다.</div></div>
+        <div class="step"><div class="n">5</div><div class="txt"><b>Phase 4 · 표준 적용.</b> AI가 경로, 문서와 랩 구조, 노트북, 실행 환경에 표준을 적용합니다. 거버넌스는 기존 파일을 보존하고 정책·필수 값을 확인한 뒤 승인한 누락 파일만 영문 템플릿으로 추가합니다.</div></div>
+        <div class="step"><div class="n">6</div><div class="txt"><b>Phase 5 · 검증과 리뷰.</b> 하네스 9종을 모두 통과했는지 확인합니다. 저자는 변경 요약과 로컬 diff를 검토하고 남은 TODO를 채웁니다. 이 단계의 자동 검사일을 E2E 검증일로 기록하지 않으며, 완주일은 Phase 6-4에서 사람이 제공합니다.</div></div>
         <div class="step"><div class="n">7</div><div class="txt"><b>Phase 6 · 게시와 등재.</b> Microsoft Open Source Management 포털에 리포를 등록합니다.</div></div>
       </div>
       <div class="callout"><span class="tag">필수 규칙</span> 보안 점검에서 시크릿이나 개인 식별자가 <b>커밋 이력</b>에서 발견되면, 저자가 선택한 방침과 관계없이 이력을 스쿼시해야 합니다. HEAD에서 지워도 이력에는 남기 때문입니다.</div>
       <h3>Private 게시부터 공개까지</h3>
       <p>리포 이름은 <code>&lt;product&gt;-&lt;topic&gt;-workshop-kr</code> 형식입니다. Microsoft Open Source Management 포털에서 공개 범위는 Private, 분류는 Non-Production으로 설정합니다. Direct Owners는 개인 2명을 지정하고 오픈소스 심사는 Yes를 선택합니다. <a href="docs/migration-guide.md#6-1-리포-생성">리포 생성</a>과 <a href="docs/migration-guide.md#6-2-생성-직후-점검">생성 직후 점검</a>을 마친 뒤 <a href="docs/migration-guide.md#6-3-push">저자가 직접 push</a>합니다.</p>
-      <p>사람이 실습을 완주한 날을 <code>validated_on</code>에 기록합니다. 실행 검증과 심사 승인을 확인한 뒤 포털의 Publicize로 공개 전환합니다. 이어서 허브 카탈로그에 등재하고, 기존 리포의 README를 새 주소 안내로 바꾼 뒤 Archive 처리합니다. <a href="docs/migration-guide.md#6-4-검증과-공개-전환">검증과 공개 전환</a>, <a href="docs/migration-guide.md#6-5-등재와-정리">등재와 정리</a>에 세부 절차가 있습니다.</p>
+      <p>선언한 실행 환경에서 사람이 실습을 완주한 날을 <code>validated_on</code>에 기록합니다. 포털형은 실제 포털에서 검증합니다. 실행 검증과 심사 승인을 확인한 뒤 포털의 Publicize로 공개 전환합니다. 카탈로그 담당자에게 실제 등록 위치와 형식을 확인해 등재하고, 기존 리포의 README를 새 주소 안내로 바꾼 뒤 Archive 처리합니다. <a href="docs/migration-guide.md#6-4-검증과-공개-전환">검증과 공개 전환</a>, <a href="docs/migration-guide.md#6-5-등재와-정리">등재와 정리</a>에 세부 절차가 있습니다.</p>
+      <p class="muted">카탈로그의 자동 수집과 stale 판정은 별도 PoC의 연동 규약이며 이 표준 저장소에는 미구현입니다. 스쿼시는 정리·현재 파일 검사·저자 검토 후 첫 커밋을 만들고, 게시할 로컬 브랜치의 커밋 SHA가 최종 검사 증빙과 같은지 확인합니다.</p>
     </section>
 
     <section class="block" id="s4">
@@ -257,12 +258,13 @@ flowchart LR
       <h2>검사 결과와 문제 해결</h2>
       <p>변환을 완료하려면 아래 9종의 자동 검사를 모두 통과해야 합니다. 이 검사들을 하네스라고 부릅니다. AI가 PR 전에 실행하고 저자는 통과 로그를 확인합니다. 병합 후 유지보수에도 같은 검사를 사용합니다. 전체 명령은 <a href="prompts/migration.md">AI 지시문</a>과 각 워크샵 리포의 AGENTS.md에 있습니다.</p>
       <ul class="clean">
-        <li><b>보안</b> · 커밋 이력을 포함한 시크릿 스캔 · 개인 리소스 식별자 잔존 · 노트북 출력과 execution_count 잔존</li>
+        <li><b>보안</b> · 현재 파일과 전체 이력의 시크릿·개인 식별자·노트북 출력 검사 · 이력 검출의 실노출·오탐 분류</li>
         <li><b>구조</b> · 공백·비ASCII 경로 · 루트 README의 전체 frontmatter 스키마 · 랩 README의 축약 frontmatter</li>
         <li><b>콘텐츠</b> · 깨진 상대 링크와 이미지 참조 · 빈 alt-text · 다른 랩의 전용 자산 참조</li>
       </ul>
       <h3>검사 환경 준비</h3>
-      <p>분석 초안을 확인한 뒤 검사 환경을 준비합니다. gitleaks 8.19 이상과 Python 3.10 이상이 필요합니다. 에이전트에 현재 설치 상태와 부족한 도구, 준비 방법을 먼저 정리하도록 요청하세요. 하네스는 devcontainer(Bash) 기준이며 Windows 로컬에서는 준비 작업만 PowerShell로 하고 검사는 devcontainer나 Git Bash에서 실행합니다.</p>
+      <p>분석 초안을 확인한 뒤 검사 환경을 준비합니다. gitleaks 8.19 이상, Python 3.10 이상과 검사 의존성이 필요합니다. 에이전트에 현재 설치 상태와 부족한 도구, 준비 방법을 먼저 정리하도록 요청하세요. 검사 스크립트와 의존성 목록을 대상 저장소에 함께 복사하며, 검사는 devcontainer나 Git Bash에서 실행합니다.</p>
+      <p>검출이나 도구 오류는 비정상 종료로 반환합니다. Git 이력이 없는 신규 골격의 현재 파일 검사와 전체 이력 검사를 구분하고, 이력 미실행을 통과로 표시하지 않습니다. 스크린샷의 리소스 식별자와 미지원 서비스 주소는 사람이 별도로 검토합니다. 포털 전용 A형 외 Codespaces 면제 기준은 아직 미확정이며 근거와 대체 검증 방법을 결정 시트에 보류합니다.</p>
       <h3>결과 보고 예시</h3>
       <p>아래는 형식 예시이며 실제 검사 결과가 아닙니다. 에이전트에 통과 로그와 함께 현재 상태, 남은 문제와 다음 행동을 정리하도록 요청하세요.</p>
       <div class="callout">

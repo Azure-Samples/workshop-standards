@@ -32,7 +32,7 @@ Node.js LTS와 npm이 필요합니다. 명령은 `npm skill`이 아니라 [Verce
 VS Code 터미널이나 PowerShell에서 다음 명령을 실행합니다.
 
 ```powershell
-npx skills add https://github.com/Azure-Samples/workshop-standards/releases/download/workshop-skill-v0.1.0-preview.1/workshop-standardization.zip --skill workshop-standardization --agent github-copilot --global --copy --yes
+npx skills add https://github.com/Azure-Samples/workshop-standards/releases/download/workshop-skill-v0.1.0-preview.2/workshop-standardization.zip --skill workshop-standardization --agent github-copilot --global --copy --yes
 ```
 
 `--global`은 여러 프로젝트에서 사용하는 개인용 설치입니다. `--copy`는 심볼릭 링크 대신 파일을 복사하고, `--yes`는 CLI의 확인 질문을 생략합니다. 설치 위치는 `%USERPROFILE%\.copilot\skills\workshop-standardization`입니다.
@@ -42,7 +42,7 @@ npx skills add https://github.com/Azure-Samples/workshop-standards/releases/down
 팀과 공유할 때는 대상 워크샵 폴더에서 `--global` 없이 실행합니다.
 
 ```powershell
-npx skills add https://github.com/Azure-Samples/workshop-standards/releases/download/workshop-skill-v0.1.0-preview.1/workshop-standardization.zip --skill workshop-standardization --agent github-copilot --copy --yes
+npx skills add https://github.com/Azure-Samples/workshop-standards/releases/download/workshop-skill-v0.1.0-preview.2/workshop-standardization.zip --skill workshop-standardization --agent github-copilot --copy --yes
 ```
 
 CLI는 `<워크샵 폴더>\.agents\skills\workshop-standardization`에 설치합니다. 프로젝트용 파일은 워크샵 저장소에 포함될 수 있으므로 커밋 전에 추가된 파일을 검토하세요. 개인용과 프로젝트용을 중복 설치하지 않습니다.
@@ -109,9 +109,9 @@ Git, Node.js나 npm 없이 설치하려면 ZIP을 내려받아 폴더를 복사�
 
 ### ZIP 다운로드와 압축 해제
 
-[설치용 ZIP 다운로드](https://github.com/Azure-Samples/workshop-standards/releases/download/workshop-skill-v0.1.0-preview.1/workshop-standardization.zip)를 선택해 `workshop-standardization.zip`을 저장합니다.
+[설치용 ZIP 다운로드](https://github.com/Azure-Samples/workshop-standards/releases/download/workshop-skill-v0.1.0-preview.2/workshop-standardization.zip)를 선택해 `workshop-standardization.zip`을 저장합니다.
 
-다운로드가 되지 않으면 [배포 페이지](https://github.com/Azure-Samples/workshop-standards/releases/tag/workshop-skill-v0.1.0-preview.1)를 열고 **Assets → workshop-standardization.zip**을 선택하세요. `Source code (zip)`은 저장소 전체 소스이므로 설치용 파일이 아닙니다.
+다운로드가 되지 않으면 [배포 페이지](https://github.com/Azure-Samples/workshop-standards/releases/tag/workshop-skill-v0.1.0-preview.2)를 열고 **Assets → workshop-standardization.zip**을 선택하세요. `Source code (zip)`은 저장소 전체 소스이므로 설치용 파일이 아닙니다.
 
 다운로드한 ZIP을 마우스 오른쪽 버튼으로 선택하고 **모두 압축 풀기**를 실행합니다. 압축을 푼 위치에서 다음 구조를 확인하세요.
 
@@ -185,7 +185,9 @@ Copilot 프로젝트용 수동 설치 경로인 `.github\skills`는 CLI가 사�
 
 ## 제공 범위와 주의사항
 
-신규 생성 템플릿은 작성 시작용 골격입니다. 제품별 실습 내용, 완성된 배포 코드와 거버넌스 문안은 포함하지 않습니다. Python 노트북과 devcontainer 골격은 언어·버전을 확인한 뒤 적용하며, TODO·라이선스·실행 검증은 별도로 완성해야 합니다.
+신규 생성 템플릿은 작성 시작용 골격입니다. 제품별 실습과 완성된 배포 코드는 포함하지 않습니다. 라이선스·보안·행동 강령·지원·기여 안내의 영문 템플릿은 [거버넌스 적용 절차](../.github/skills/workshop-standardization/references/governance.md)에 따라 정책과 필수 값을 확인한 뒤 승인한 누락 파일에만 적용합니다. 기존 파일은 보존하고 미확정 정책은 보류합니다. Python 노트북과 devcontainer 골격은 언어·버전을 확인한 뒤 적용하며, TODO·동의·실행 검증은 별도로 완성해야 합니다.
+
+[AI 지시문](../prompts/migration.md)을 단독으로 사용할 때도 이관 범위·경로·작업 폴더, 이력·라이선스 방침과 동의 근거, 실제 계획 승인을 전달해야 합니다. 이전 입력 양식에 이 값들이 없으면 분석·계획에서 확인한 뒤 진행하며, 입력값이 있다는 사실만으로 승인하지 않습니다. 검증일은 기존 이관의 Phase 6-4에서 사람이 최종 콘텐츠를 완주한 날짜로 기록합니다.
 
 ZIP에는 skill 지침, 참고 문서·템플릿과 라이선스가 들어 있습니다. `manifest.json`에 포함 파일의 해시와 초안 상태를 기록하며, 실제 결정 시트·로그·`.env`는 포함하지 않습니다.
 
