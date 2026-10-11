@@ -9,13 +9,16 @@ import { parseDocument, root, validateDocs } from './validate-docs.mjs';
 export const skillName = 'workshop-standardization';
 export const skillDirectory = `.github/skills/${skillName}`;
 const resources = [
-  'SKILL.md', 'references/create.md', 'references/report.md',
+  'SKILL.md', 'references/create.md', 'references/report.md', 'references/governance.md',
   'assets/root-readme.md.tmpl', 'assets/lab-readme.md.tmpl', 'assets/agents.md.tmpl',
   'assets/gitignore.tmpl', 'assets/notebook.ipynb.tmpl', 'assets/devcontainer.json.tmpl',
+  'assets/license-mit.md.tmpl', 'assets/license-docs.md.tmpl', 'assets/security.md.tmpl',
+  'assets/code-of-conduct.md.tmpl', 'assets/support.md.tmpl', 'assets/contributing.md.tmpl',
 ];
 const references = [
   'docs/standards.md', 'docs/migration-guide.md', 'prompts/migration.md',
   'template/decision-sheet.md', 'template/rulesets/protect-main.json',
+  'scripts/workshop_checks.py', 'scripts/requirements-workshop.txt',
 ];
 
 export function validateSkillMetadata(source) {
@@ -84,6 +87,7 @@ export function buildSkill({ directory = root } = {}) {
     if (destination === 'references/docs/migration-guide.md') {
       source = source.replaceAll('](../workshop-migration-howto.html)', '](https://azure-samples.github.io/workshop-standards/)');
     }
+    source = source.replaceAll(`](../${skillDirectory}/references/governance.md)`, '](../governance.md)');
     files.set(destination, source);
   }
   validateBundle(files);

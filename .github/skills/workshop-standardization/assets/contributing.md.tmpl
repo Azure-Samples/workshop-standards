@@ -1,0 +1,57 @@
+# Contributing to {{WORKSHOP_TITLE_TEXT}}
+
+Contributions to the workshop documentation and sample code are welcome.
+
+## Contributor License Agreement
+
+{{CLA_SECTION}}
+
+## Code of Conduct
+
+Read and follow the [Code of Conduct]({{CODE_OF_CONDUCT_PATH}}).
+
+## Issues and proposals
+
+Search the [issue tracker]({{ISSUES_URL}}) before reporting a bug or proposing a feature.
+Include the affected lab and step, the relevant revision, your execution environment,
+reproduction steps, and the expected and actual results.
+Discuss substantial changes with the maintainers before implementing them.
+
+Remove credentials, subscription and tenant IDs, personal resource identifiers,
+customer data, and private information from logs and screenshots.
+Report security vulnerabilities using [SECURITY.md]({{SECURITY_PATH}}), not a public issue.
+See [SUPPORT.md]({{SUPPORT_PATH}}) for help and support information.
+
+## Pull requests
+
+Search the [pull requests]({{PULLS_URL}}) for related changes.
+Make your changes in a dedicated branch of your fork and keep unrelated local changes intact.
+Submit the pull request to the maintainer-confirmed `{{DEFAULT_BRANCH_TEXT}}` branch.
+Use the target repository's pull request template when one exists.
+
+Keep the change focused and describe any changes to lab behavior.
+Preserve existing copyright notices, attribution, and third-party licenses.
+Do not change licensing or rewrite shared history without maintainer approval.
+Use follow-up commits when addressing review feedback.
+
+## Workshop validation
+
+{{EXECUTION_SECTION}}
+
+Run the nine checks documented in [AGENTS.md]({{AGENTS_PATH}}) from the repository root
+using Git Bash or a Bash-based devcontainer.
+The checks require gitleaks 8.19 or newer, Python 3.10 or newer,
+and the dependencies in `scripts/requirements-workshop.txt`.
+Record each command, its scope, commit SHA, exit status, and actual result.
+A final `PASS` does not override an earlier error.
+If a new repository has no Git history, report history checks as not run;
+do not count a tree-only scan as a full history pass.
+
+Keep validation logs and decision records in a confirmed Git-ignored local directory.
+Share only redacted summaries in the pull request.
+
+Automated checks do not replace a complete workshop run in the declared environment
+or a review of screenshots for private information.
+Leave `validated_on` blank until a person completes the workshop and provides the date.
+Do not invent durations, cost estimates, or successful execution results.
+List unresolved TODOs and policy decisions in the pull request.

@@ -28,12 +28,14 @@ instructions provided by the bot. You will only need to do this once across all 
 
 ## 검증
 
-Node.js 22 이상과 Git을 준비한 뒤 다음 명령을 실행합니다.
+Node.js 22 이상, Git과 Python 3.10 이상을 준비한 뒤 다음 명령을 실행합니다. 워크샵 검사 회귀 테스트는 실제 Azure 실행 없이 대역으로 검사 호출을 확인합니다. gitleaks가 설치되어 있으면 합성 시크릿으로 실제 도구 통합 테스트도 실행하고, 없으면 해당 테스트만 미실행으로 표시합니다.
 
 ```bash
 npm ci
 npm test
 npm run validate
+python -m pip install -r scripts/requirements-workshop.txt
+npm run test:workshop
 ```
 
 HTML이나 Pages 빌드를 수정했다면 데스크톱·모바일 화면에서 목차와 링크를 확인합니다. Pages artifact에는 HTML 안내서만 포함해야 합니다. 상세 Markdown 링크는 배포 커밋의 GitHub 파일 화면으로 연결합니다.

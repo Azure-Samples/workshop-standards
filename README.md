@@ -46,21 +46,25 @@ tests/
 dry-run/                              # 로컬 전용, Git 제외
 ```
 
-표준 제안서의 부록에 README·랩 문서·AGENTS.md 구성 예시가 있습니다. 결정 시트와 ruleset 외에 skill의 assets에 README·랩·AGENTS·노트북·devcontainer 작성용 골격을 제공합니다. 제품별 실습과 완성된 거버넌스·배포 문안은 포함하지 않습니다. 이 저장소 전체를 새 워크샵의 GitHub template repository로 사용하지 않습니다.
+표준 제안서의 부록에 README·랩 문서·AGENTS.md 구성 예시가 있습니다. 결정 시트와 ruleset 외에 skill의 assets에 README·랩·AGENTS·노트북·devcontainer 작성용 골격과 영문 거버넌스 템플릿을 제공합니다. [거버넌스 적용 절차](.github/skills/workshop-standardization/references/governance.md)에 따라 기존 파일을 보존하고 정책·권리자·실제 URL을 확인한 뒤 승인한 누락 파일만 추가합니다. 제품별 실습·배포 코드와 대상별 정책 승인 문안은 포함하지 않습니다. 이 저장소 전체를 새 워크샵의 GitHub template repository로 사용하지 않습니다.
 
 skill은 신규 생성과 기존 표준화를 지원합니다. [설치 가이드](docs/skill-guide.md)에 따라 `npx skills add`에 GitHub Releases의 설치용 ZIP URL을 지정해 설치하는 방법을 권장합니다. 참고 문서가 빠지지 않도록 저장소 이름 대신 배포 ZIP URL을 사용합니다. Node.js·npm 없이 설치하려면 ZIP을 내려받아 압축을 풀고 skill 폴더를 복사할 수 있습니다. 설치와 인식 확인을 마친 뒤 skill로 분석·계획을 시작합니다. 배포 담당자의 빌드·검증 절차는 [ZIP 배포 가이드](docs/skill-release.md)에 따로 정리했습니다.
 
 ## 로컬 작업과 검증
 
-Node.js 22 이상과 Git이 필요합니다. 프로젝트 루트에서 실행합니다.
+Node.js 22 이상과 Git이 필요합니다. 워크샵 검사 구현의 회귀 테스트에는 Python 3.10 이상과 검사 의존성도 필요합니다. 프로젝트 루트에서 실행합니다.
 
 ```bash
 npm ci
 npm test
 npm run validate
+python -m pip install -r scripts/requirements-workshop.txt
+npm run test:workshop
 ```
 
 검증 대상은 공유 문서·설정과 이 저장소의 검증 도구입니다. 문서의 상대 링크와 앵커, YAML·JSON 파싱, ruleset의 기본 구조, 로컬 전용 파일의 Git 추적 여부를 검사합니다. 외부 URL의 응답과 워크샵의 Azure E2E 실행은 검사하지 않습니다. 워크샵 자체의 9종 검사는 AI 지시문에 별도로 유지합니다.
+
+[워크샵 검사 구현](scripts/workshop_checks.py)은 대상 저장소에 복사해 사용하며, [회귀 테스트](tests/workshop_checks_test.py)는 검출·도구 오류의 종료 상태, 현재 파일과 이력 범위, 메타데이터와 링크 처리의 정상·실패 사례를 확인합니다. gitleaks 호출은 대역으로 확인하고, gitleaks가 설치된 환경에서는 합성 시크릿으로 실제 도구 통합 테스트도 실행합니다. 도구가 없으면 해당 통합 테스트만 미실행으로 표시합니다. 이 테스트 통과가 실제 워크샵 시크릿 검사나 E2E 실행 완료를 뜻하지는 않습니다.
 
 `dry-run/`, `local-only/`, `.env` 파일과 배포 결과물은 Git에서 제외합니다. 실제 작성한 결정 시트, 보안 검사 결과와 실행 로그도 이 로컬 전용 경로에 보관합니다. 루트에 실행 기록을 두면 `.gitignore`가 자동으로 제외하지 않으며, 공유 경로 검사에서 차단됩니다.
 

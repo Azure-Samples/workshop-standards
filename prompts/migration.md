@@ -1,6 +1,6 @@
 # AI 마이그레이션 지시문 — 워크샵 표준화 변환
 
-> 이 파일 전체를 GitHub Copilot Agent 또는 Claude Code에 그대로 전달한다. 아래 [입력] 블록만 저자가 [결정 시트](../template/decision-sheet.md) 값으로 채우면 된다. 특정 도구 전용 문법은 쓰지 않았으므로 두 에이전트 어디서나 동작한다.
+> 이 파일 전체를 GitHub Copilot Agent 또는 Claude Code에 전달한다. 아래 [입력] 블록에 [결정 시트](../template/decision-sheet.md)의 확정값과 실제 계획 승인 여부를 옮긴다. 입력값이 있다는 사실만으로 변환 승인을 간주하지 않는다. 특정 도구 전용 문법은 쓰지 않았으므로 두 에이전트 어디서나 사용할 수 있다.
 
 표준 규격은 [표준화 제안](../docs/standards.md), 사람이 진행할 절차는 [상세 이관 가이드](../docs/migration-guide.md)를 참고한다. 이 파일을 이관 대상에 복사할 때는 필요한 참고 문서를 미리 확인한다. 아래 9종 검사는 워크샵 대상이며, 이 표준 저장소의 문서 CI와는 별개다.
 
@@ -11,6 +11,18 @@
 ## 입력
 
 ```yaml
+migration_scope:      # full | subfolder — 저자가 확정한 이관 범위
+source_path:          # 구 리포 루트 기준 경로. full이면 ".", subfolder이면 확정한 추출 경로
+work_folder:          # 저자가 승인한 실제 로컬 작업 폴더의 절대 경로
+history_policy:       # preserve | squash — 이력 실노출 발견 시 중단 후 squash로 재확정
+license_policy:
+  current:            # 기존 파일·README 고지와 적용 범위. 미확인이면 변환 보류
+  code:               # preserve | MIT — 저자가 확정한 코드 라이선스 방침
+  docs:               # preserve | CC-BY-SA-4.0 — 저자가 확정한 문서 라이선스 방침
+  scope:              # 코드·문서·이미지의 적용 경로, 권리자, 제외 자료
+  consent:            # completed | not-required — 필요한 동의 완료 또는 불필요 근거 확인
+  consent_basis:      # 동의 기록 또는 기존 조건을 변경하지 않아 불필요한 이유
+plan_approved:        # true | false — 아래 결정값과 작업 계획에 대한 실제 저자 승인
 repo_type:            # A(클릭스루) | B(노트북) | C(가이드+검증)
 execution:            # [codespaces, local] | [portal] 등
 title:                # frontmatter title
@@ -34,21 +46,35 @@ notes:                # 저자 특이사항 (없으면 비움)
 
 ## 입력 처리 규칙
 
-[입력] 블록이 완전히 채워져 있으면 질문 없이 진행한다. 대부분 비어 있거나 결정 시트가 없으면 아래 **시트 인터뷰**로 시작하고, 일부만 비어 있으면 그다음의 항목별 분류대로 처리한다.
+이 지시문을 단독으로 전달해도 skill과 같은 승인 조건을 적용한다. **필수 결정값과 실제 계획 승인이 확인된 경우에만 승인한 범위에서 진행한다.** 값이 모두 있어도 `plan_approved`가 없거나 false이거나 저자의 실제 승인 근거가 없으면 읽기 전용 분석과 계획 제시만 수행하고 확인을 기다린다. AI가 권고값을 확정값으로 바꾸거나 `plan_approved: true`를 대신 기록하지 않는다.
+
+필수 결정값은 `migration_scope`, `source_path`, `work_folder`, `history_policy`, `license_policy`의 모든 하위 필드, `repo_type`, `exclude_paths`, `old_repo_url`이다. 빈값·허용값 오류·실제 저장소와의 충돌이 있으면 변환하지 않고 해당 항목을 보고한다. `exclude_paths: []`는 저자가 제외 대상이 없다고 확정한 값이며, 미기입과 다르다. 선택 메타데이터가 비어 있다는 이유로 이미 확인한 승인값을 다시 묻지 않는다.
+
+기존 입력 양식에 새 필수 결정값이 없으면 기본값으로 추정하지 말고 누락한 값과 계획 승인만 확인한다. Windows 절대 경로는 YAML에서 `'C:\workshops\work'`처럼 작은따옴표로 감싸거나 백슬래시를 적절히 이스케이프한다.
+
+이관 범위와 추출 경로는 원본 저장소에서 확인하고, 쓰기 작업은 승인한 `work_folder`에서만 수행한다. 이력 보존은 승인한 로컬 작업본을 사용하고, 스쿼시·추출에 새 폴더가 필요하면 원본을 보존한 별도 작업 폴더를 승인받는다. `license_policy.consent: not-required`는 기존 고지·조건을 변경하지 않고 보존·보완하는 경우처럼 동의가 불필요하다고 확인한 근거가 있어야 한다. 라이선스 파일 부재나 1인 저작만으로 동의 불필요를 추정하지 않는다. 기존 MIT 문서에 CC BY-SA를 적용하는 변경도 필요한 동의를 확인한다.
+
+계획 승인은 도구 설치·라이선스 전환·원격 게시·공개 전환을 자동으로 승인하지 않는다. 각 행위가 승인한 계획에 명시되어 있는지 확인하고 별도 승인 조건을 유지한다. 보안 점검에서 실노출이 발견되면 승인값이 있어도 즉시 중단한다. 이력 실노출이면 스쿼시 방침과 변경된 작업 계획을 저자에게 재확인한 뒤에만 재개한다.
+
+결정 시트가 없거나 필수 값이 대부분 비어 있으면 아래 **시트 인터뷰**로 시작한다. 일부만 빠졌으면 누락한 필수 결정값과 승인 여부만 확인한다.
 
 ### 시트 인터뷰 — 시트가 없을 때의 시작 방법
 
-1. 작업 없이 리포부터 분석한다: 디렉터리 구조와 명명 상태, 콘텐츠 유형 신호(md/노트북 비중, 포털 절차 여부), 라이선스, 내부 산출물 후보(작업 계획서·실행 로그·`tmp-` 스크립트), 노트북 출력 유무, 커밋 이력 활성도.
+1. 작업 없이 리포부터 분석한다: 디렉터리 구조와 명명 상태, 수강자의 주 학습 경로와 실행 환경, 라이선스, 내부 산출물 후보(작업 계획서·실행 로그·`tmp-` 스크립트), 노트북 출력 유무, 커밋 이력 활성도. 파일 비율만으로 유형을 정하지 않으며 Markdown+포털·CLI·로컬 조합의 유형 불일치와 실행 환경 예외는 보류 근거를 기록한다.
 2. 분석 결과로 결정 시트 **전 항목의 권고안 초안**을 만든다. 항목마다 권고값과 한 줄 근거를 붙이고, 질문 필수 항목(`repo_type`·`exclude_paths` 등)은 [확인 필요]로 표시한다.
-3. 초안 전체를 한 번에 제시하고 저자의 확인·수정을 기다린다. 항목별로 여러 번 되묻지 않는다 — 질문은 초안 1회로 모은다.
-4. 저자가 확정한 시트를 [입력] 값으로 삼아 진행하고, 확정 시트 전문을 변경 요약 보고에 기록으로 남긴다. 시트 파일 자체는 리포에 커밋하지 않는다(내부 산출물).
+3. 초안 전체를 한 번에 제시하고 저자의 확인·수정을 기다린다. 인터페이스가 단일 질문만 허용하면 미확정 항목을 차례로 확인하되, 이미 확정한 값을 다시 묻지 않는다.
+4. 저자가 결정값과 작업 계획을 승인하면 확정 시트를 [입력]으로 옮긴다. 이력·라이선스 방침과 작업 범위가 모두 전달됐는지 확인하고 실제 승인에 근거해 `plan_approved`를 기록한다. 확정 시트 전문은 로컬 전용 기록에 남기고 공유 보고에는 민감한 값을 제거한 결정 요약만 넣는다. 시트 파일 자체는 리포에 커밋하지 않는다(내부 산출물).
 
-삭제 대상, history 방침, 유형 판정처럼 영향 범위가 크거나 판단이 필요한 값은 확정 전에 어떤 변환 작업도 시작하지 않는다.
+삭제 대상, 이관 범위·작업 폴더, history·라이선스 방침과 유형은 확정 전에 어떤 변환 작업도 시작하지 않는다. 값의 확정과 계획 승인을 구분한다.
 
 **질문 필수 — 비어 있으면 작업을 시작하지 않고 사람에게 묻는다.** 추정해서 채우지 않는다.
 - `repo_type` — 수강자의 주 학습 경로 판단이 필요하다. 리포를 분석해 판정 근거와 함께 제안하고 확인을 받는다.
 - `exclude_paths` — 삭제 행위와 직결된다. 내부 산출물로 보이는 후보(작업 계획서, 실행 로그, `tmp-` 스크립트 등) 목록을 제시하고 확인을 받는다.
 - `old_repo_url` — source 표기와 날짜 계산의 근거라서 없으면 진행할 수 없다.
+- `migration_scope`, `source_path`, `work_folder` — 전체·서브폴더 범위, 실제 추출 경로와 쓰기 대상 폴더를 확인한다.
+- `history_policy` — 보존·스쿼시는 저자가 선택한다. 이력 실노출이면 중단하고 스쿼시로 재확정한다.
+- `license_policy` — 기존 고지와 코드·문서의 목표 방침, 적용 범위·권리자·제외 자료, 필요한 동의와 근거를 확인한다. 미확정 전환을 강행하지 않으며, 기존 조건 보존을 택한다면 그 방침을 명시적으로 확정한다.
+- `plan_approved` — 실제 작업 계획 승인 없이는 분석만 수행한다.
 
 **AI가 채운다 — 비어 있으면 리포에서 계산·추출하고, 산정 근거를 변경 요약 보고에 명시한다.**
 - `title`, `description` — 리포 README에서 추출
@@ -60,17 +86,18 @@ notes:                # 저자 특이사항 (없으면 비움)
 - `lab_structure` — 전 랩 단일 문서형 (분할하지 않음)
 - `layout` — 자동 판정: 최상위에 학습 경로 외 실행 코드가 있으면 labs, 없으면 root
 - `path_map` — AI가 매핑안을 만들어 변경 요약 보고에 표로 제시
-- `dependency_paths`, `external_runtime_dependencies`, `notes` — 해당 없음으로 간주
+- `dependency_paths`, `external_runtime_dependencies` — 범위 밖 의존성을 조사한 뒤 없다고 확인한 경우에만 해당 없음. 서브폴더 추출의 필수 의존성이 새로 발견되면 범위와 계획을 다시 확인
+- `notes` — 해당 없음으로 간주
 
 ## 작업 순서
 
-순서를 지킨다. 각 단계는 논리적으로 분리된 커밋으로 만든다. **각 단계의 실행 결과를 확인한 뒤에만 다음 단계로 넘어간다. 단계가 실패했으면 후속 단계를 진행하지 말고 실패 지점을 보고한다** — 실패를 안고 진행하면 하네스에서 한꺼번에 터져 원인 추적이 어려워진다.
+순서를 지킨다. 이력 보존은 각 단계를 논리적으로 분리된 커밋으로 만든다. 스쿼시는 정리·현재 파일 검사·저자 검토 후 첫 커밋을 만든 뒤 새 이력으로 9종을 다시 실행한다. 그 전의 단계별 변경은 로컬 diff와 보고에 기록하고 정리 전 파일을 커밋하지 않는다. **각 단계의 실행 결과를 확인한 뒤에만 다음 단계로 넘어간다. 단계가 실패했으면 후속 단계를 진행하지 말고 실패 지점을 보고한다** — 실패를 안고 진행하면 하네스에서 한꺼번에 터져 원인 추적이 어려워진다.
 
-**1. 보안 점검.** 아래 하네스의 스캔 세 종(시크릿, 개인 식별자, 노트북 출력)을 먼저 실행하고, 검출 결과를 실노출과 오탐으로 분류한다. `<your-...>` 형식의 placeholder, `{{변수}}` 템플릿, 문서에 명시된 예시 값은 오탐이다. 오탐은 `.gitleaks.toml` allowlist에 등록해 재검출을 막고 진행한다. **실노출이 하나라도 있으면 즉시 작업을 멈추고 분류표(파일·커밋·성격)를 보고한다.** 스스로 판단해 지우고 계속 진행하지 않는다. 이력 처리 판단은 사람의 몫이다.
+**1. 보안 점검.** 검사 스크립트·의존성을 대상의 `scripts/`에 준비하고 충돌하는 파일은 확인받는다. 아래 하네스의 스캔 세 종(시크릿, 개인 식별자, 노트북 출력)을 working tree와 전체 이력에 실행하고, 검출 결과를 실노출과 오탐으로 분류한다. 구 리포는 전체 clone을 사용하고 이관 대상 refs가 모두 로컬에 있는지 확인한다. shallow clone의 검사 결과를 전체 이력 통과로 표시하지 않는다. placeholder·템플릿과 근거가 확인된 공개 예시는 오탐으로 분류하되 `example`이라는 문자열만으로 자동 제외하지 않는다. 시크릿 오탐은 `.gitleaks.toml`의 정확한 allowlist로 처리한다. 식별자·이력 출력의 오탐은 아래 해시 기반 예외 형식으로 저자가 확인한 항목만 등록한다. **실노출이 하나라도 있으면 즉시 작업을 멈추고 분류표(파일·커밋·성격)를 마스킹해 보고한다.** 스스로 판단해 지우고 계속 진행하지 않는다. 이력 처리 판단과 노출된 자격 증명의 폐기·재발급은 사람의 몫이다. 출력 잔존만으로 시크릿 노출을 단정하지 않으며, 승인한 기존 출력의 이력 예외와 현재 출력 제거를 구분한다.
 
 **2. 내부 산출물 제거.** `exclude_paths`의 파일·폴더를 삭제한다. 목록에 없는 파일은 임의로 지우지 않는다.
 
-**3. 개인 리소스 식별자 치환.** 사람이 이력 처리를 확정한 뒤, 문서·코드·설정에 남은 실제 엔드포인트 URL과 리소스명을 `<your-...>` placeholder로 교체한다. 치환 전후로 하네스 스캔 (2)를 돌려 잔존 여부를 확인한다.
+**3. 개인 리소스 식별자 치환.** 사람이 이력 처리를 확정한 뒤, 문서·코드·설정에 남은 실제 엔드포인트 URL과 리소스명을 `<your-...>` placeholder로 교체한다. 치환 전후로 하네스 검사 2의 `--scope tree`를 실행해 현재 파일 잔존을 확인한다. 이력 전체 검사는 최종 단계에서 별도로 실행한다.
 
 **4. 경로 표준화.** 랩 폴더명은 `NN-kebab-name` 단일 패턴이다 — `lab01-`, `step-01` 같은 단어 접두어는 제거한다(번호가 이미 순서를 담당한다). 배치는 `layout` 값을 따른다: `labs`면 모든 랩 폴더를 `labs/` 아래로 모으고, `root`면 루트에 직배치한다. 컨테이너 폴더명은 `labs/`만 허용하며 `steps/`·`modules/` 같은 변형은 `labs/`로 개명한다. 공백·한글이 포함된 파일·폴더명도 같은 패턴으로 바꾼다. `path_map`이 제공되면 그 매핑을 그대로 따른다. 없으면 매핑안을 먼저 확정해 변경 요약 보고에 기존→표준 표로 제시하고 그대로 일괄 개명한다. 개명과 동시에 리포 전체의 상대 링크·이미지 참조를 재작성한다. 개명 커밋은 링크 재작성까지 포함해 하나로 묶는다. 이미지·데이터 파일은 랩 전용이면 해당 랩의 `assets/`에, 다른 랩이 참조하는 것이 확인된 경우에만 `/shared-assets/`로 옮기고 모든 참조 링크를 수정한다 — 같은 자산을 여러 랩에 중복 복사하지 않는다. 노트북은 관련 단계 문서와 같은 디렉터리에 두고, `notebooks/` 폴더는 노트북 수가 많을 때만 쓴다.
 
@@ -93,128 +120,69 @@ validated_on:
 
 `lab_structure`에서 분할형으로 지정된 랩은 학습 의존 순서를 분석해 README.md(진입 문서) + `01-*.md` 단계 문서로 나눈다. 이때 허용되는 작업은 이동, 제목 정렬, 번호 조정, 링크 수정뿐이다. 단계 문서는 H1 하나만 쓰고 단계 제목·실습 절차·실행 자료·이전/다음만 담으며, frontmatter와 표준 골격을 반복하지 않는다. 파일 번호와 H1·하위 제목 번호를 모두 새 학습 순서에 맞게 재정렬하며, `01-overview.md`도 단계 문서로 간주한다. 노트북은 연결된 단계 문서와 같은 번호 접두어를 쓴다(예: `03-silver.md` ↔ `03-bronze-to-silver.ipynb`).
 
-각 랩 README.md는 표준 섹션 순서로 재배치한다: 개요·학습 목표 → 사전 요구사항 → 소요 시간 → 실습 단계(분할형은 학습 단계 표) → 검증 → 정리(Clean-up) → 트러블슈팅 → 이전/다음 링크. 학습 목표·사전 요구사항·검증 기준·학습 단계 표·이전/다음 링크는 원문에 근거가 있으면 **원문 문장의 재배치·요약으로 작성한다. 새로운 사실을 발명하지 않으며, 변경 요약 보고에 작성 항목별 원문 근거 위치를 표시한다.** `<!-- TODO: 저자 작성 -->`은 원문 근거가 없거나 비용·리소스 삭제 판단이 필요한 항목(정리, 트러블슈팅 등)에만 남긴다 — TODO를 기본값처럼 일괄 삽입하지 않는다. 탐색 링크는 전 랩에서 완성한다: 첫 랩은 워크샵 홈으로, 마지막 랩은 홈 또는 완료 안내로 연결한다. **본문 실습 절차를 창작하거나 삭제하지 않는다.**
+각 랩 README.md는 표준 섹션 순서로 재배치한다: 개요·학습 목표 → 사전 요구사항 → 소요 시간 → 실습 단계(분할형은 학습 단계 표) → 검증 → 정리(Clean-up) → 트러블슈팅 → 이전/다음 링크. 학습 목표·사전 요구사항·검증 기준·학습 단계 표·이전/다음 링크는 원문에 근거가 있으면 **원문 문장의 재배치·요약으로 작성한다. 새로운 사실을 발명하지 않으며, 변경 요약 보고에 작성 항목별 원문 근거 위치를 표시한다.** `<!-- TODO: 저자 작성 -->`은 원문 근거가 없거나 비용·리소스 삭제 판단이 필요한 항목(정리, 트러블슈팅 등)에만 남긴다 — TODO를 기본값처럼 일괄 삽입하지 않는다.
+
+본문에는 `status`·`validated_on`의 상태·검증일 반복 설명이나 미확정 작성 상태를 넣지 않는다. 제목·소요 시간·실행 환경처럼 수강자에게 필요한 안내는 유지한다. 확정된 소요 시간은 해당 frontmatter 값과 일치시키고, 근거 없는 시간은 공란과 TODO로 남긴다. 원문 근거나 확정된 내용이 없는 섹션은 제목만 남기고 설명 문장을 비워 두며, 저자가 확인·작성해야 하는 이유는 TODO 주석에만 적는다. "~은 저자 확인 전입니다", "~재검증해야 합니다" 같은 상태 보고 문장을 본문에 평문으로 쓰지 않는다 — 이런 문장은 TODO 주석과 내용이 겹치므로, 본문에 쓰여 있다면 지우고 주석만 남긴다.
+
+탐색 링크는 전 랩에서 완성한다: 첫 랩은 워크샵 홈으로, 마지막 랩은 홈 또는 완료 안내로 연결한다. **본문 실습 절차를 창작하거나 삭제하지 않는다.**
 
 **7. 노트북 처리.** 유형과 관계없이 모든 `.ipynb`의 `outputs`를 빈 배열로, `execution_count`를 null로 만든다 — A형의 보조 노트북도 예외가 아니다. B·C형에서는 노트북이 있는 장에 페어링 README.md(개요·노트북 목록 표·사전 준비·검증·정리·다음 단계)를 만든다. 표의 소요 시간은 알 수 없으면 TODO로 남긴다.
 
-**8. 실행 환경 (A형 면제).** `.devcontainer/devcontainer.json`이 없으면 리포의 언어·의존성에 맞게 추가하고, README 상단에 Open in Codespaces 뱃지를 넣는다. 의존성 버전이 고정되어 있지 않으면(requirements.txt 버전 미지정 등) 현재 동작 버전으로 고정한다.
+**8. 실행 환경 (포털 전용 A형 면제).** `.devcontainer/devcontainer.json`이 없으면 리포의 언어·의존성에 맞게 추가하고, 실제 대상 저장소 URL로 Open in Codespaces 배지를 넣는다. 의존성 버전은 실제 실행으로 확인한 값만 고정한다. 로컬 전용 등 추가 면제는 아직 공통 승인 기준이 없으므로 자동 적용하지 말고 결정 시트의 보류 항목으로 남긴다.
 
-**9. 라이선스·거버넌스 파일.** LICENSE(MIT), LICENSE-DOCS(CC BY-SA 4.0), SECURITY.md, CODE_OF_CONDUCT.md, SUPPORT.md를 확인·추가한다. 문안은 허브 리포의 승인된 템플릿을 사용한다. 이 표준 저장소와 skill의 작성용 골격에는 다섯 파일의 완성 문안이 없으므로, 누락되면 필요한 동의와 공식 원문·조직 승인 문안을 확인한다. 문안을 확보하지 못하면 임의로 정책이나 연락처를 만들지 않고 보류 사항으로 보고하며 공개 준비 완료로 표시하지 않는다. 포털이 리포를 만들 때 이 파일들을 넣어 주지 않으므로 게시 전에 모두 갖춘다. `source`가 localized면 README에 원본 출처 절을 추가한다.
+**9. 라이선스·거버넌스 파일.** `license_policy`에서 확정한 코드·문서 방침과 적용 범위를 따른다. LICENSE/LICENCE 계열, 문서용 라이선스, SECURITY.md, CODE_OF_CONDUCT.md, SUPPORT.md와 CONTRIBUTING.md를 루트·`.github`·`docs`에서 확인한다. [거버넌스 적용 절차](../.github/skills/workshop-standardization/references/governance.md)에 따라 기존 파일을 보존하고, 문안의 적용 조건·저작권 고지·필요한 동의·실제 URL을 확인한 뒤 승인한 누락 파일만 영문 템플릿으로 추가한다. 기존 파일의 업데이트·이동·라이선스 전환은 별도 승인받는다. Microsoft 소유권·CLA 봇·CSS 지원을 추정하지 않는다. 필수 값이나 연결 문서가 없으면 해당 파일을 보류하고, 지원·CLA 미확정은 TODO 주석과 결과 보고로 남긴다. 미확정 정책·동의가 남으면 공개 준비 완료로 표시하지 않는다. `source`가 localized면 README에 원본 출처 절을 추가한다.
 
-**10. AGENTS.md 배치.** 표준 4개 섹션(리포 규칙 / 콘텐츠·노트북 스타일 가이드 / 검증 하네스 / 백로그·DO NOT)으로 작성한다. 검증 하네스 섹션에는 아래 하네스 명령을 그대로 옮겨, 이후 이 리포에서 작업하는 모든 에이전트가 같은 기준으로 검증하게 한다. 파일럿 리포(https://github.com/kyungtaak/AzureAIFoundryWorkshop-Code/tree/standard-v2)의 AGENTS.md를 구조 참고용으로 삼는다.
+**10. AGENTS.md 배치.** 표준 4개 섹션(리포 규칙 / 콘텐츠·노트북 스타일 가이드 / 검증 하네스 / 백로그·DO NOT)으로 작성한다. 검증 하네스 섹션에는 아래 명령과 검사 범위를 그대로 옮긴다. [검사 스크립트](../scripts/workshop_checks.py)와 [검사 의존성](../scripts/requirements-workshop.txt)을 워크샵의 `scripts/`에 함께 복사한다. 기존 파일과 충돌하면 덮어쓰지 않고 확인받는다. 설치한 skill 폴더를 영구 실행 의존성으로 삼지 않는다. 파일럿 리포(https://github.com/kyungtaak/AzureAIFoundryWorkshop-Code/tree/standard-v2)의 AGENTS.md를 구조 참고용으로 삼는다.
 
 **11. 하네스 전체 실행.** 아래 검사를 모두 통과할 때까지 수정을 반복한다. 통과하지 못한 항목을 임의로 검사에서 빼지 않는다.
 
 ## 검증 하네스
 
-하네스는 devcontainer(Bash) 기준이다. 최소 버전: gitleaks 8.19 이상, Python 3.10 이상. Windows 로컬에서는 준비 작업(winget/scoop으로 gitleaks 설치 등)에 한해 PowerShell을 쓰고, 검사 자체는 devcontainer 또는 Git Bash에서 실행한다.
+하네스는 devcontainer 또는 Git Bash에서 저장소 루트 기준으로 실행한다. 최소 버전은 `gitleaks dir`·`gitleaks git`을 제공하는 gitleaks 8.19 이상과 Python 3.10 이상이다. Windows 로컬에서는 도구 준비에 PowerShell을 사용할 수 있다. 도구 설치는 승인받고 `python3 -m pip install -r scripts/requirements-workshop.txt`로 검사 의존성을 준비한다.
+
+검사 1~3의 기본 범위는 working tree와 로컬 전체 refs의 이력이다. Git이 없거나 커밋이 없거나 shallow clone이면 이력 검사는 오류로 종료한다. 신규 골격과 정리 후 첫 커밋 전 점검에만 `--scope tree`를 사용하며 **이력 검사는 미실행**으로 보고한다. 원본 이력에서 실노출을 발견해 승인한 스쿼시를 수행했다면 정리된 새 저장소의 이력으로 최종 검사를 다시 실행한다. 외부 refs 누락 여부는 별도로 확인한다.
+
+정상 종료는 0, 검출은 1, 입력·도구 오류는 2 이상의 비정상 종료로 보고한다. 앞 단계가 실패했는데 마지막 메시지만 PASS인 결과는 통과가 아니다. 검사 2는 ACR·Service Bus를 포함한 Azure 개인 엔드포인트와 이름 또는 리소스 경로로 식별되는 구독·테넌트 ID를 검사한다. 일반 UUID나 모든 서비스의 리소스명을 자동 분류하지는 못하므로, 미지원 주소와 스크린샷의 리소스 식별자·고객 데이터는 사람이 추가 검토한다.
+
+식별자와 이력 출력의 오탐은 `.workshop-scan-allowlist.json`에 다음 형식으로 기록한다. `kind`는 `endpoint`, `identifier`, `historical-output` 중 하나이며, `path`는 저장소 상대 경로다. `sha256`에는 검출 메시지의 해시를 넣고 `reason`에 저자가 확인한 근거를 남긴다. 실제 민감한 값은 기록하지 않는다. 현재 노트북 출력은 예외로 허용하지 않는다. 실노출을 예외 등록으로 숨기지 않는다.
+
+```json
+{
+  "entries": [
+    {
+      "kind": "endpoint",
+      "path": "README.md",
+      "sha256": "<검출 메시지의 64자리 SHA-256>",
+      "reason": "<저자가 확인한 공개 예시 근거>"
+    }
+  ]
+}
+```
 
 ```bash
-# (1) 시크릿 스캔 — 이력 포함 (gitleaks >= 8.19 신문법)
-gitleaks git . --log-opts="--all" || { echo "FAIL: secrets"; exit 1; }
-
-# (2) 개인 리소스 식별자 스캔 — 문서·코드·설정
-grep -rEn --include='*.md' --include='*.py' --include='*.ipynb' --include='*.sh' --include='*.bicep' --include='*.json' \
-  'https?://[a-z0-9-]+\.(openai\.azure\.com|cognitiveservices\.azure\.com|services\.ai\.azure\.com|azure-api\.net)' . \
-  | grep -v '<your\|example\|placeholder' && echo "FAIL: personal endpoints" || echo "PASS"
-
-# (3) 노트북 출력 클리어 확인
-python3 - <<'EOF'
-import json, glob, sys
-bad = [f for f in glob.glob('**/*.ipynb', recursive=True)
-       if any(c.get('outputs') or c.get('execution_count') is not None
-              for c in json.load(open(f))['cells'] if c['cell_type']=='code')]
-print("FAIL: outputs in", bad) if bad else print("PASS: notebooks clean")
-sys.exit(1 if bad else 0)
-EOF
-
-# (4) 공백·비ASCII 경로 잔존 확인
-find . -path ./.git -prune -o -print | grep -P '[ ]|[^\x00-\x7F]' \
-  && echo "FAIL: non-standard paths" || echo "PASS"
-
-# (5) frontmatter 스키마 검증
-python3 - <<'EOF'
-import re, sys, yaml
-txt = open('README.md', encoding='utf-8').read()
-m = re.match(r'^---\n(.*?)\n---', txt, re.S)
-assert m, "FAIL: no frontmatter"
-fm = yaml.safe_load(m.group(1))
-required = ['type','title','description','level','authors','contacts','duration_minutes',
-            'tags','language','execution','status','source','last_updated']
-missing = [k for k in required if k not in fm]
-if 'validated_on' not in fm: missing.append('validated_on(키 필수, 값은 공란 허용)')
-print("FAIL: missing", missing) if missing else print("PASS: frontmatter")
-sys.exit(1 if missing else 0)
-EOF
-
-# (6) 깨진 상대 링크·이미지 참조 검사 (fenced/inline 코드 제외, <img src> 포함)
-python3 - <<'EOF'
-import re, glob, os, sys, urllib.parse
-bad = []
-for f in glob.glob('**/*.md', recursive=True):
-    t = open(f, encoding='utf-8').read()
-    t = re.sub(r'```.*?```', '', t, flags=re.S)   # fenced code block 제외 (SQL 등 오인 방지)
-    t = re.sub(r'`[^`\n]*`', '', t)               # inline code 제외
-    base = os.path.dirname(f)
-    links = re.findall(r'\]\(([^)#\s]+?)(?:#[^)]*)?\)', t)
-    links += re.findall(r'<img[^>]+src=["\']([^"\']+)["\']', t)
-    for link in links:
-        if link.startswith(('http', 'mailto:', 'data:')): continue
-        p = os.path.normpath(os.path.join(base, urllib.parse.unquote(link.strip())))
-        if not os.path.exists(p): bad.append(f"{f} -> {link}")
-print("FAIL:\n" + "\n".join(bad)) if bad else print("PASS: links")
-sys.exit(1 if bad else 0)
-EOF
-
-# (7) 랩 README 축약 frontmatter 검사 (title·duration_minutes·last_updated 키 존재)
-python3 - <<'EOF'
-import re, glob, os, sys, yaml
-bad = []
-for f in glob.glob('**/README.md', recursive=True):
-    d = os.path.basename(os.path.dirname(f))
-    if not re.match(r'^(\d{2}-|lab\d)', d): continue  # lab\d은 전환기 하위호환 — 표준은 NN-
-    m = re.match(r'^---\n(.*?)\n---', open(f, encoding='utf-8').read(), re.S)
-    if not m: bad.append(f + ' -> frontmatter 없음'); continue
-    try: fm = yaml.safe_load(m.group(1)) or {}
-    except yaml.YAMLError as e: bad.append(f + ' -> YAML 파싱 오류(따옴표 누락 등)'); continue
-    miss = [k for k in ('title','duration_minutes','last_updated') if k not in fm]
-    if miss: bad.append(f + ' -> 키 누락: ' + ','.join(miss))
-print("FAIL:\n" + "\n".join(bad)) if bad else print("PASS: lab frontmatter")
-sys.exit(1 if bad else 0)
-EOF
-
-# (8) 이미지 alt-text 검사 (빈 alt 금지 — markdown ![]와 HTML <img>)
-python3 - <<'EOF'
-import re, glob, sys
-bad = []
-for f in glob.glob('**/*.md', recursive=True):
-    t = re.sub(r'```.*?```', '', open(f, encoding='utf-8').read(), flags=re.S)
-    if re.search(r'!\[\s*\]\(', t): bad.append(f + ' -> 빈 alt (markdown)')
-    for img in re.findall(r'<img[^>]*>', t):
-        m = re.search(r'alt=["\']([^"\']*)["\']', img)
-        if not m or not m.group(1).strip(): bad.append(f + ' -> 빈 alt (<img>)')
-print("FAIL:\n" + "\n".join(bad)) if bad else print("PASS: alt-text")
-sys.exit(1 if bad else 0)
-EOF
-
-# (9) 랩 전용 자산 교차 참조 검사 (다른 랩의 assets/ 참조 = shared-assets 이동 대상)
-python3 - <<'EOF'
-import re, glob, os, sys, urllib.parse
-bad = []
-for f in glob.glob('**/*.md', recursive=True):
-    t = re.sub(r'```.*?```', '', open(f, encoding='utf-8').read(), flags=re.S)
-    base = os.path.dirname(f).replace(os.sep, '/')
-    links = re.findall(r'\]\(([^)#\s]+?)\)', t) + re.findall(r'<img[^>]+src=["\']([^"\']+)["\']', t)
-    for l in links:
-        if l.startswith(('http','mailto:','data:')) or '/assets/' not in l or 'shared-assets' in l: continue
-        p = os.path.normpath(os.path.join(base, urllib.parse.unquote(l))).replace(os.sep, '/')
-        owner = p.split('/assets/')[0]
-        if not (base + '/').startswith(owner + '/'):
-            bad.append(f + ' -> ' + l + ' (shared-assets 이동 대상)')
-print("FAIL:\n" + "\n".join(bad)) if bad else print("PASS: assets")
-sys.exit(1 if bad else 0)
-EOF
+# 실패한 검사 뒤에는 진행하지 않는다.
+set -e
+# (1) 시크릿: working tree + 전체 이력
+python3 scripts/workshop_checks.py 1
+# (2) 개인 엔드포인트·구독/테넌트 ID: working tree + 전체 이력
+python3 scripts/workshop_checks.py 2
+# (3) 노트북 출력: 현재 제거 + 이력 검출 분류
+python3 scripts/workshop_checks.py 3
+# (4) 공백·비ASCII 경로
+python3 scripts/workshop_checks.py 4
+# (5) 루트 frontmatter: 필수 키·자료형·허용값·날짜
+python3 scripts/workshop_checks.py 5
+# (6) 상대 링크·이미지: Markdown 제목·참조형 링크·HTML 포함
+python3 scripts/workshop_checks.py 6
+# (7) 랩 frontmatter: 필수 키·자료형·날짜
+python3 scripts/workshop_checks.py 7
+# (8) 빈 이미지 alt-text
+python3 scripts/workshop_checks.py 8
+# (9) 다른 랩의 전용 assets 참조
+python3 scripts/workshop_checks.py 9
 ```
+
+검사 4~9는 현재 파일을 검사하며 `.git`, `node_modules`, `.venv`, `venv`, `__pycache__`는 제외한다. 검사 2~3도 현재 파일에서 같은 실행 환경 폴더를 제외하되 Git 이력의 blob은 제외하지 않는다. 검사 2는 스크립트의 `TEXT_SUFFIXES`에 선언된 문서·코드·설정 확장자와 `.env` 계열·Dockerfile·Makefile을 검사한다. 바이너리, 미지원 확장자와 외부 자원은 별도로 검토한다. 텍스트 입력은 UTF-8이며 읽기·파싱 오류는 통과가 아니다. 링크 검사는 파일 존재 여부를 확인하며 문서 앵커나 외부 URL 응답 검증을 대신하지 않는다. 루트 `/assets/`는 다른 랩의 전용 자산으로 판정하지 않는다. 이관 대상의 랩 전용 자산과 공용 자산 배치 규칙은 별도로 유지한다. 검사 7은 전환기의 `labNN` README도 검사하되 표준 경로는 `NN-kebab-name`을 유지한다.
 
 ## DO NOT
 
