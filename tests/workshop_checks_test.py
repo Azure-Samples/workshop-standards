@@ -207,24 +207,76 @@ class WorkshopChecksTest(unittest.TestCase):
     @unittest.skipUnless(shutil.which("gitleaks"), "gitleaks not installed; nine-check integration not run")
     def test_copied_workshop_harness_passes_all_nine_commands(self):
         self.init()
+        self.write(".gitignore",
+                   (ROOT / ".github" / "skills" / "workshop-standardization" /
+                    "assets" / "gitignore.tmpl").read_text(encoding="utf-8"))
         self.root_metadata(self.metadata())
         self.write("01-lab/README.md", "---\ntitle: Lab\nduration_minutes: 10\n"
                    "last_updated: 2026-10-11\n---\n![Image](assets/image.png \"Title\")")
         self.write("01-lab/assets/image.png", "fixture")
         self.write("01-lab/exercise.ipynb", self.notebook())
-        self.write("scripts/workshop_checks.py",
+        self.write("local-only/workshop-checks/workshop_checks.py",
                    (ROOT / "scripts" / "workshop_checks.py").read_text(encoding="utf-8"))
-        self.write("scripts/requirements-workshop.txt",
+        self.write("local-only/workshop-checks/requirements-workshop.txt",
                    (ROOT / "scripts" / "requirements-workshop.txt").read_text(encoding="utf-8"))
         self.commit()
+        self.assertEqual(checks.git("ls-files", "--", "local-only"), b"")
+        ignored = checks.git("check-ignore", "--", "local-only/workshop-checks/workshop_checks.py",
+                             "local-only/workshop-checks/requirements-workshop.txt")
+        self.assertEqual(len(ignored.splitlines()), 2)
         for check in range(1, 10):
             with self.subTest(check=check):
                 result = subprocess.run(
-                    [os.sys.executable, "-B", "scripts/workshop_checks.py", str(check)],
+                    [os.sys.executable, "-B", "local-only/workshop-checks/workshop_checks.py", str(check)],
                     capture_output=True, text=True
                 )
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
                 self.assertIn(f"PASS: check {check}", result.stdout)
+
+    def test_relocated_checker_preserves_success_failure_and_error_results(self):
+        self.init()
+        self.write(".gitignore", "local-only/\n")
+        self.root_metadata(self.metadata())
+        self.write("01-lab/README.md", "---\ntitle: Lab\nduration_minutes: 10\n"
+                   "last_updated: 2026-10-11\n---\n![Image](assets/image.png)")
+        self.write("01-lab/assets/image.png", "fixture")
+        paths = ["scripts/workshop_checks.py", "local-only/workshop-checks/workshop_checks.py"]
+        source = (ROOT / "scripts" / "workshop_checks.py").read_text(encoding="utf-8")
+        for name in paths:
+            self.write(name, source)
+        self.commit()
+        self.assertEqual(checks.git("ls-files", "--", "local-only"), b"")
+        self.assertEqual(checks.git("check-ignore", "--", paths[1]).decode().strip(), paths[1])
+
+        def compare(check, expected):
+            results = [
+                subprocess.run([os.sys.executable, "-B", name, str(check)],
+                               capture_output=True, text=True)
+                for name in paths
+            ]
+            for result in results:
+                self.assertEqual(result.returncode, expected, result.stdout + result.stderr)
+            self.assertEqual(results[0].stdout, results[1].stdout)
+            self.assertEqual(results[0].stderr, results[1].stderr)
+
+        for check in range(2, 10):
+            with self.subTest(check=check, expected=0):
+                compare(check, 0)
+
+        self.write("local-only/resource.txt", "https://personal.openai.azure.com")
+        self.write("local-only/output.ipynb", self.notebook(True))
+        self.write("local-only/folder with spaces/file.txt", "fixture")
+        self.root_metadata({**self.metadata(), "level": "invalid"})
+        self.write("local-only/report.md", "[Missing](missing.md)")
+        self.write("01-lab/README.md", "---\ntitle: []\n---\n![](assets/image.png)")
+        self.write("02-lab/README.md", "---\ntitle: Other\nduration_minutes: 10\n"
+                   "last_updated: 2026-10-11\n---\n![Other](../01-lab/assets/image.png)")
+        for check in range(2, 10):
+            with self.subTest(check=check, expected=1):
+                compare(check, 1)
+
+        self.write("local-only/output.ipynb", "{")
+        compare(3, 2)
 
     def test_paths_include_empty_directories_but_ignore_environment_files(self):
         Path("folder with spaces").mkdir()

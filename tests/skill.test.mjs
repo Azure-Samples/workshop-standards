@@ -90,6 +90,22 @@ test('portable bundle has complete local links, deterministic hashes and no priv
   const skill = readFileSync(path.join(output, 'SKILL.md'), 'utf8');
   assert.doesNotMatch(skill, /\.\.\/\.\.\/\.\.\//);
   assert.match(skill, /\.\/references\/docs\/standards\.md/);
+  for (const file of [
+    'SKILL.md', 'references/governance.md', 'references/create.md',
+    'references/prompts/migration.md', 'references/docs/standards.md',
+    'references/docs/migration-guide.md', 'references/template/decision-sheet.md',
+  ]) {
+    const source = readFileSync(path.join(output, file), 'utf8');
+    assert.match(source, /THIRD-PARTY-NOTICES/, file);
+    assert.match(source, /LICENSE-DOCS/, file);
+    assert.match(source, /기존 문서에 통합할 수 없는 이유/, file);
+  }
+  for (const file of [
+    'SKILL.md', 'references/create.md', 'assets/agents.md.tmpl', 'assets/contributing.md.tmpl',
+    'references/prompts/migration.md', 'references/docs/standards.md', 'references/docs/migration-guide.md',
+  ]) {
+    assert.match(readFileSync(path.join(output, file), 'utf8'), /local-only\/workshop-checks\//, file);
+  }
   const manifest = JSON.parse(readFileSync(path.join(output, 'manifest.json'), 'utf8'));
   assert.equal(manifest.standardStatus, 'draft');
   assert.equal(Object.keys(manifest.files).length, 24);
@@ -194,6 +210,56 @@ test('governance workflow preserves existing files and gates policies and requir
   ]) {
     assert.ok(source.includes(rule), `Missing policy guard: ${rule}`);
   }
+});
+
+test('license policies distinguish dual licensing from required third-party notices', () => {
+  for (const file of [
+    `${skillDirectory}/SKILL.md`, `${skillDirectory}/references/governance.md`,
+    'prompts/migration.md', 'docs/standards.md', 'docs/migration-guide.md',
+  ]) {
+    const source = readFileSync(path.join(root, file), 'utf8');
+    for (const rule of [
+      '원문과 기존 위치를 보존', '기존 라이선스 문서나 자료별 고지로 요구사항을 충족하면 별도 파일을 만들지',
+      '포함된 제3자 자료의 라이선스나 조직 정책에서 저장소 단위 고지를 요구할 때만',
+      '근거·적용 대상·범위·기존 문서에 통합할 수 없는 이유를 제시하고 별도로 승인',
+      '이중 라이선스가 실제로 필요', '권리자·적용 범위·동의 근거',
+      '별도 문서 라이선스가 확정되지 않았거나 기존 라이선스로 충분하면 생성하지',
+    ]) {
+      assert.ok(source.includes(rule), `Missing license guard in ${file}: ${rule}`);
+    }
+    assert.match(source, /제3자 자료 고지 파일이 (?:아니|아닙)/);
+    assert.match(source, /관행이나 템플릿에 있다는 이유만으로/);
+  }
+  const governance = readFileSync(path.join(root, skillDirectory, 'references', 'governance.md'), 'utf8');
+  assert.match(governance, /별도 고지가 필요한지 확인되지 않으면 생성을 보류/);
+  assert.match(governance, /외부 자료를 언급하거나 링크했다는 사실만으로 고지 파일을 만들지 않는다/);
+  assert.match(governance, /\| LICENSE-DOCS \|.*이중 라이선스가 실제로 필요.*파일 생성 승인이 확인된 경우에만 신규 생성/);
+  const documentationLicense = template('license-docs.md.tmpl');
+  assert.match(documentationLicense, /This notice does not relicense third-party material/);
+  assert.match(documentationLicense, /its existing notices and licenses remain applicable/);
+  assert.match(documentationLicense, /Preserve the original attribution and license notices/);
+});
+
+test('local workshop checker guidance preserves root execution, scan scope and existing files', () => {
+  for (const file of [
+    `${skillDirectory}/SKILL.md`, `${skillDirectory}/references/create.md`,
+    `${skillDirectory}/assets/agents.md.tmpl`, 'prompts/migration.md',
+  ]) {
+    const source = readFileSync(path.join(root, file), 'utf8');
+    assert.match(source, /local-only\/workshop-checks\//, file);
+    assert.match(source, /저장소 루트(?:에서| 기준으로) 실행/, file);
+    assert.match(source, /Git 제외 여부와 검사 도구의 미추적 상태/, file);
+    assert.match(source, /Git 제외를 검사 제외로 간주하지/, file);
+    assert.match(source, /새 clone/, file);
+    assert.match(source, /기존 `scripts\/`의.*자동으로 이동·삭제하지/, file);
+    assert.doesNotMatch(source, /대상의 `scripts\/`에/, file);
+  }
+  for (const file of ['agents.md.tmpl', 'contributing.md.tmpl']) {
+    const source = template(file);
+    assert.match(source, /local-only\/workshop-checks\/requirements-workshop\.txt/, file);
+    assert.doesNotMatch(source, /`scripts\/requirements-workshop\.txt`/, file);
+  }
+  assert.match(template('gitignore.tmpl'), /^local-only\/\r?$/m);
 });
 
 for (const track of ['portal', 'notebook', 'markdown-code', 'upstream-fork']) {

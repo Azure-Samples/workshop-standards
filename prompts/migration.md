@@ -93,7 +93,7 @@ notes:                # 저자 특이사항 (없으면 비움)
 
 순서를 지킨다. 이력 보존은 각 단계를 논리적으로 분리된 커밋으로 만든다. 스쿼시는 정리·현재 파일 검사·저자 검토 후 첫 커밋을 만든 뒤 새 이력으로 9종을 다시 실행한다. 그 전의 단계별 변경은 로컬 diff와 보고에 기록하고 정리 전 파일을 커밋하지 않는다. **각 단계의 실행 결과를 확인한 뒤에만 다음 단계로 넘어간다. 단계가 실패했으면 후속 단계를 진행하지 말고 실패 지점을 보고한다** — 실패를 안고 진행하면 하네스에서 한꺼번에 터져 원인 추적이 어려워진다.
 
-**1. 보안 점검.** 검사 스크립트·의존성을 대상의 `scripts/`에 준비하고 충돌하는 파일은 확인받는다. 아래 하네스의 스캔 세 종(시크릿, 개인 식별자, 노트북 출력)을 working tree와 전체 이력에 실행하고, 검출 결과를 실노출과 오탐으로 분류한다. 구 리포는 전체 clone을 사용하고 이관 대상 refs가 모두 로컬에 있는지 확인한다. shallow clone의 검사 결과를 전체 이력 통과로 표시하지 않는다. placeholder·템플릿과 근거가 확인된 공개 예시는 오탐으로 분류하되 `example`이라는 문자열만으로 자동 제외하지 않는다. 시크릿 오탐은 `.gitleaks.toml`의 정확한 allowlist로 처리한다. 식별자·이력 출력의 오탐은 아래 해시 기반 예외 형식으로 저자가 확인한 항목만 등록한다. **실노출이 하나라도 있으면 즉시 작업을 멈추고 분류표(파일·커밋·성격)를 마스킹해 보고한다.** 스스로 판단해 지우고 계속 진행하지 않는다. 이력 처리 판단과 노출된 자격 증명의 폐기·재발급은 사람의 몫이다. 출력 잔존만으로 시크릿 노출을 단정하지 않으며, 승인한 기존 출력의 이력 예외와 현재 출력 제거를 구분한다.
+**1. 보안 점검.** 검사 스크립트·의존성을 대상의 `local-only/workshop-checks/`에 준비하고 충돌하는 파일은 확인받는다. 아래 하네스의 스캔 세 종(시크릿, 개인 식별자, 노트북 출력)을 working tree와 전체 이력에 실행하고, 검출 결과를 실노출과 오탐으로 분류한다. 구 리포는 전체 clone을 사용하고 이관 대상 refs가 모두 로컬에 있는지 확인한다. shallow clone의 검사 결과를 전체 이력 통과로 표시하지 않는다. placeholder·템플릿과 근거가 확인된 공개 예시는 오탐으로 분류하되 `example`이라는 문자열만으로 자동 제외하지 않는다. 시크릿 오탐은 `.gitleaks.toml`의 정확한 allowlist로 처리한다. 식별자·이력 출력의 오탐은 아래 해시 기반 예외 형식으로 저자가 확인한 항목만 등록한다. **실노출이 하나라도 있으면 즉시 작업을 멈추고 분류표(파일·커밋·성격)를 마스킹해 보고한다.** 스스로 판단해 지우고 계속 진행하지 않는다. 이력 처리 판단과 노출된 자격 증명의 폐기·재발급은 사람의 몫이다. 출력 잔존만으로 시크릿 노출을 단정하지 않으며, 승인한 기존 출력의 이력 예외와 현재 출력 제거를 구분한다.
 
 **2. 내부 산출물 제거.** `exclude_paths`의 파일·폴더를 삭제한다. 목록에 없는 파일은 임의로 지우지 않는다.
 
@@ -132,13 +132,19 @@ validated_on:
 
 **9. 라이선스·거버넌스 파일.** `license_policy`에서 확정한 코드·문서 방침과 적용 범위를 따른다. LICENSE/LICENCE 계열, 문서용 라이선스, SECURITY.md, CODE_OF_CONDUCT.md, SUPPORT.md와 CONTRIBUTING.md를 루트·`.github`·`docs`에서 확인한다. [거버넌스 적용 절차](../.github/skills/workshop-standardization/references/governance.md)에 따라 기존 파일을 보존하고, 문안의 적용 조건·저작권 고지·필요한 동의·실제 URL을 확인한 뒤 승인한 누락 파일만 영문 템플릿으로 추가한다. 기존 파일의 업데이트·이동·라이선스 전환은 별도 승인받는다. Microsoft 소유권·CLA 봇·CSS 지원을 추정하지 않는다. 필수 값이나 연결 문서가 없으면 해당 파일을 보류하고, 지원·CLA 미확정은 TODO 주석과 결과 보고로 남긴다. 미확정 정책·동의가 남으면 공개 준비 완료로 표시하지 않는다. `source`가 localized면 README에 원본 출처 절을 추가한다.
 
-**10. AGENTS.md 배치.** 표준 4개 섹션(리포 규칙 / 콘텐츠·노트북 스타일 가이드 / 검증 하네스 / 백로그·DO NOT)으로 작성한다. 검증 하네스 섹션에는 아래 명령과 검사 범위를 그대로 옮긴다. [검사 스크립트](../scripts/workshop_checks.py)와 [검사 의존성](../scripts/requirements-workshop.txt)을 워크샵의 `scripts/`에 함께 복사한다. 기존 파일과 충돌하면 덮어쓰지 않고 확인받는다. 설치한 skill 폴더를 영구 실행 의존성으로 삼지 않는다. 파일럿 리포(https://github.com/kyungtaak/AzureAIFoundryWorkshop-Code/tree/standard-v2)의 AGENTS.md를 구조 참고용으로 삼는다.
+라이선스·고지 파일은 관행이나 템플릿에 있다는 이유만으로 추가하지 않는다. 외부 자료의 저작권·라이선스 고지는 원문과 기존 위치를 보존하고, 기존 라이선스 문서나 자료별 고지로 요구사항을 충족하면 별도 파일을 만들지 않는다. `THIRD-PARTY-NOTICES`·`NOTICE` 등 별도 고지 파일은 포함된 제3자 자료의 라이선스나 조직 정책에서 저장소 단위 고지를 요구할 때만 생성 계획에 포함한다. 생성 전 근거·적용 대상·범위·기존 문서에 통합할 수 없는 이유를 제시하고 별도로 승인받는다. 기존 고지의 이동·병합도 승인 없이 진행하지 않는다.
+
+`LICENSE-DOCS`는 코드와 문서에 서로 다른 라이선스를 적용하기 위한 파일이며 제3자 자료 고지 파일이 아니다. 이중 라이선스가 실제로 필요하고 권리자·적용 범위·동의 근거가 확인된 경우에만 생성 계획에 포함한다. 별도 문서 라이선스가 확정되지 않았거나 기존 라이선스로 충분하면 생성하지 않는다. 기존 파일의 이름을 변경하거나 복제해 표준 파일 목록을 맞추지 않는다.
+
+**10. AGENTS.md 배치.** 표준 4개 섹션(리포 규칙 / 콘텐츠·노트북 스타일 가이드 / 검증 하네스 / 백로그·DO NOT)으로 작성한다. 검증 하네스 섹션에는 아래 명령과 검사 범위를 그대로 옮긴다. [검사 스크립트](../scripts/workshop_checks.py)와 [검사 의존성](../scripts/requirements-workshop.txt)을 워크샵의 `local-only/workshop-checks/`에 함께 복사한다. 기존 파일과 충돌하면 덮어쓰지 않고 확인받는다. 설치한 skill 폴더를 영구 실행 의존성으로 삼지 않는다. 파일럿 리포(https://github.com/kyungtaak/AzureAIFoundryWorkshop-Code/tree/standard-v2)의 AGENTS.md를 구조 참고용으로 삼는다.
 
 **11. 하네스 전체 실행.** 아래 검사를 모두 통과할 때까지 수정을 반복한다. 통과하지 못한 항목을 임의로 검사에서 빼지 않는다.
 
 ## 검증 하네스
 
-하네스는 devcontainer 또는 Git Bash에서 저장소 루트 기준으로 실행한다. 최소 버전은 `gitleaks dir`·`gitleaks git`을 제공하는 gitleaks 8.19 이상과 Python 3.10 이상이다. Windows 로컬에서는 도구 준비에 PowerShell을 사용할 수 있다. 도구 설치는 승인받고 `python3 -m pip install -r scripts/requirements-workshop.txt`로 검사 의존성을 준비한다.
+하네스는 devcontainer 또는 Git Bash에서 저장소 루트 기준으로 실행한다. 검사 도구 폴더로 이동해서 실행하지 않는다. 최소 버전은 `gitleaks dir`·`gitleaks git`을 제공하는 gitleaks 8.19 이상과 Python 3.10 이상이다. Windows 로컬에서는 도구 준비에 PowerShell을 사용할 수 있다. 도구 설치는 승인받고 `python3 -m pip install -r local-only/workshop-checks/requirements-workshop.txt`로 검사 의존성을 준비한다.
+
+검사 스크립트·의존성은 공개 실습 자료가 아니라 표준화용 로컬 도구다. 검증한 skill 번들이나 이 지시문에 연결된 검사 원본에서 `local-only/workshop-checks/`로 복사하며 새 clone에서도 다시 준비한다. `local-only/`의 Git 제외 여부와 검사 도구의 미추적 상태를 확인한다. 제외 규칙이 없으면 승인한 계획에 포함해 추가하며, 이미 추적 중이면 `.gitignore`로 해결된다고 간주하지 말고 별도 정리 승인을 받는다. Git 초기화 전에는 제외 규칙을 확인하고 초기화 후 추적 상태를 다시 확인한다. Git 제외를 검사 제외로 간주하지 않으며 검사 범위는 유지한다. 기존 `scripts/`의 검사 도구나 실습 스크립트를 자동으로 이동·삭제하지 않는다.
 
 검사 1~3의 기본 범위는 working tree와 로컬 전체 refs의 이력이다. Git이 없거나 커밋이 없거나 shallow clone이면 이력 검사는 오류로 종료한다. 신규 골격과 정리 후 첫 커밋 전 점검에만 `--scope tree`를 사용하며 **이력 검사는 미실행**으로 보고한다. 원본 이력에서 실노출을 발견해 승인한 스쿼시를 수행했다면 정리된 새 저장소의 이력으로 최종 검사를 다시 실행한다. 외부 refs 누락 여부는 별도로 확인한다.
 
@@ -163,23 +169,23 @@ validated_on:
 # 실패한 검사 뒤에는 진행하지 않는다.
 set -e
 # (1) 시크릿: working tree + 전체 이력
-python3 scripts/workshop_checks.py 1
+python3 local-only/workshop-checks/workshop_checks.py 1
 # (2) 개인 엔드포인트·구독/테넌트 ID: working tree + 전체 이력
-python3 scripts/workshop_checks.py 2
+python3 local-only/workshop-checks/workshop_checks.py 2
 # (3) 노트북 출력: 현재 제거 + 이력 검출 분류
-python3 scripts/workshop_checks.py 3
+python3 local-only/workshop-checks/workshop_checks.py 3
 # (4) 공백·비ASCII 경로
-python3 scripts/workshop_checks.py 4
+python3 local-only/workshop-checks/workshop_checks.py 4
 # (5) 루트 frontmatter: 필수 키·자료형·허용값·날짜
-python3 scripts/workshop_checks.py 5
+python3 local-only/workshop-checks/workshop_checks.py 5
 # (6) 상대 링크·이미지: Markdown 제목·참조형 링크·HTML 포함
-python3 scripts/workshop_checks.py 6
+python3 local-only/workshop-checks/workshop_checks.py 6
 # (7) 랩 frontmatter: 필수 키·자료형·날짜
-python3 scripts/workshop_checks.py 7
+python3 local-only/workshop-checks/workshop_checks.py 7
 # (8) 빈 이미지 alt-text
-python3 scripts/workshop_checks.py 8
+python3 local-only/workshop-checks/workshop_checks.py 8
 # (9) 다른 랩의 전용 assets 참조
-python3 scripts/workshop_checks.py 9
+python3 local-only/workshop-checks/workshop_checks.py 9
 ```
 
 검사 4~9는 현재 파일을 검사하며 `.git`, `node_modules`, `.venv`, `venv`, `__pycache__`는 제외한다. 검사 2~3도 현재 파일에서 같은 실행 환경 폴더를 제외하되 Git 이력의 blob은 제외하지 않는다. 검사 2는 스크립트의 `TEXT_SUFFIXES`에 선언된 문서·코드·설정 확장자와 `.env` 계열·Dockerfile·Makefile을 검사한다. 바이너리, 미지원 확장자와 외부 자원은 별도로 검토한다. 텍스트 입력은 UTF-8이며 읽기·파싱 오류는 통과가 아니다. 링크 검사는 파일 존재 여부를 확인하며 문서 앵커나 외부 URL 응답 검증을 대신하지 않는다. 루트 `/assets/`는 다른 랩의 전용 자산으로 판정하지 않는다. 이관 대상의 랩 전용 자산과 공용 자산 배치 규칙은 별도로 유지한다. 검사 7은 전환기의 `labNN` README도 검사하되 표준 경로는 `NN-kebab-name`을 유지한다.

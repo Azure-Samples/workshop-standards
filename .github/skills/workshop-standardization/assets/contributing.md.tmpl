@@ -41,7 +41,13 @@ Use follow-up commits when addressing review feedback.
 Run the nine checks documented in [AGENTS.md]({{AGENTS_PATH}}) from the repository root
 using Git Bash or a Bash-based devcontainer.
 The checks require gitleaks 8.19 or newer, Python 3.10 or newer,
-and the dependencies in `scripts/requirements-workshop.txt`.
+and the dependencies in `local-only/workshop-checks/requirements-workshop.txt`.
+Copy `workshop_checks.py` and `requirements-workshop.txt` from the verified
+workshop-standardization skill bundle into `local-only/workshop-checks/` for each new clone.
+Confirm that `local-only/` is Git-ignored and the copied tools are untracked.
+Resolve existing-file conflicts with the maintainer before copying.
+Git ignore rules do not exclude files from workshop checks.
+Do not automatically move or delete existing files under `scripts/`.
 Record each command, its scope, commit SHA, exit status, and actual result.
 A final `PASS` does not override an earlier error.
 If a new repository has no Git history, report history checks as not run;
