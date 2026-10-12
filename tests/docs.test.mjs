@@ -101,10 +101,15 @@ test('migration instructions keep every step and call the shared nine-check impl
     assert.ok(source.includes(`**${step}. `), `Missing migration step ${step}`);
   }
   for (let check = 1; check <= 9; check++) {
-    assert.ok(source.includes(`python3 scripts/workshop_checks.py ${check}\n`), `Missing check ${check}`);
+    assert.ok(source.includes(`python3 local-only/workshop-checks/workshop_checks.py ${check}\n`), `Missing check ${check}`);
   }
   assert.match(source, /set -e/);
   assert.match(source, /검사 1~3의 기본 범위는 working tree와 로컬 전체 refs의 이력/);
+  assert.match(source, /python3 -m pip install -r local-only\/workshop-checks\/requirements-workshop\.txt/);
+  assert.match(source, /검사 도구 폴더로 이동해서 실행하지 않는다/);
+  assert.match(source, /Git 제외를 검사 제외로 간주하지 않으며 검사 범위는 유지/);
+  assert.match(source, /이미 추적 중이면 `.gitignore`로 해결된다고 간주하지 말고 별도 정리 승인을 받는다/);
+  assert.doesNotMatch(source, /python3 scripts\/workshop_checks\.py/);
   assert.doesNotMatch(source, /grep -v '<your/);
 });
 
@@ -149,6 +154,24 @@ test('license example preserves README MIT notice and records actual consent req
   assert.match(example, /문서 CC BY-SA 적용에 필요한 저자 동의 완료/);
   assert.match(example, /plan_approved: false/);
   assert.match(sheet, /파일 부재·1인 저작만으로 해당 없음으로 처리하지 않음/);
+});
+
+test('migration guide and decision sheet do not mandate separate license or notice files', () => {
+  const guide = readFileSync(path.join(root, 'docs', 'migration-guide.md'), 'utf8');
+  const sheet = readFileSync(path.join(root, 'template', 'decision-sheet.md'), 'utf8');
+  const skillGuide = readFileSync(path.join(root, 'docs', 'skill-guide.md'), 'utf8');
+  assert.match(guide, /\| License \|.*기존 고지로 충분하지 않을 때만 LICENSE-DOCS 추가/);
+  assert.doesNotMatch(guide, /포털에 적지 않고 LICENSE-DOCS 파일로 넣음/);
+  assert.match(guide, /LICENSE-DOCS나 외부 자료 고지 파일을 일괄 생성하지 않습니다/);
+  for (const rule of [
+    '필요 근거:', '적용 대상·범위:', '기존 문서에 통합할 수 없는 이유:',
+    '문안·생성 승인:', '기존 고지로 충분하면 추가하지 않음',
+    '전환 동의와 파일 생성 승인은 별개', '템플릿 목록 전체를 생성하는 작업은 아닙니다',
+  ]) {
+    assert.ok(sheet.includes(rule), `Missing license planning field: ${rule}`);
+  }
+  assert.doesNotMatch(sheet, /거버넌스 파일 6종\(LICENSE·LICENSE-DOCS/);
+  assert.match(skillGuide, /ZIP 자체의 라이선스 보존과 대상 워크샵에 라이선스·고지 파일을 생성하는 작업은 별개/);
 });
 
 test('E2E timing and learner-facing metadata guidance agree across workflow documents', () => {

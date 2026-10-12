@@ -58,6 +58,10 @@ last_updated: 2026-09-16
 
 **라이선스.** 표준은 코드 MIT + 문서 CC BY-SA 4.0 이원화입니다. 기존 파일과 README의 라이선스 고지·적용 범위를 확인하고 보존합니다. 기존 MIT 문서에 CC BY-SA를 적용하는 변경도 필요한 동의를 확인해야 합니다. 1인 저작이어도 실제 권리와 동의를 확인하며, 외부 기여분·이미지·데이터의 권리와 제외 범위도 따로 확인합니다. 파일이 없다는 이유로 고지나 적용 라이선스가 없다고 단정하지 않습니다. 지시문의 `license_policy`에 현재 고지, 코드·문서 목표 방침, 적용 범위·권리자·제외 자료, 동의 여부와 근거를 전달합니다. 기존 조건을 유지하기로 결정했다면 `preserve`를 명시하고 전환 보류 사유를 기록합니다.
 
+`LICENSE-DOCS`는 이중 라이선스가 실제로 필요하고 권리자·적용 범위·동의 근거와 생성 승인이 확인된 경우에만 추가합니다. 별도 문서 라이선스가 확정되지 않았거나 기존 라이선스로 충분하면 생성하지 않습니다. 이 파일은 제3자 자료 고지 파일이 아닙니다.
+
+외부 자료의 저작권·라이선스 고지는 원문과 기존 위치를 보존하고, 기존 라이선스 문서나 자료별 고지로 요구사항을 충족하면 별도 파일을 만들지 않습니다. `THIRD-PARTY-NOTICES`·`NOTICE` 등 별도 고지 파일은 포함된 제3자 자료의 라이선스나 조직 정책에서 저장소 단위 고지를 요구할 때만 생성 계획에 포함합니다. 생성 전 근거·적용 대상·범위·기존 문서에 통합할 수 없는 이유를 제시하고 별도로 승인받습니다. 기존 고지의 이동·병합도 승인 없이 진행하지 않으며 관행이나 템플릿에 있다는 이유만으로 파일을 추가·개명·복제하지 않습니다.
+
 **history 방침.** 커밋 이력을 보존할지(mirror), 새로 시작할지(스쿼시) 저자가 선택합니다. 단, 예외 규칙이 하나 있습니다. **Phase 2 보안 점검에서 시크릿이나 개인 리소스 식별자가 이력에서 발견되면 선택권 없이 스쿼시가 강제됩니다.** 공개 조직으로 이력을 그대로 옮기는 순간 과거 커밋의 노출 정보까지 함께 공개되기 때문입니다.
 
 지시문에는 이 방침을 `history_policy: preserve` 또는 `squash`로 전달합니다. 이력 실노출이 발견되면 기존 계획 승인과 관계없이 중단하고, 스쿼시 방침과 변경 계획을 저자에게 재확인합니다.
@@ -80,12 +84,14 @@ last_updated: 2026-09-16
 
 공개 조직으로 옮기기 전에 시크릿과 개인 정보를 반드시 스캔합니다. 이 단계는 생략할 수 없으며, working tree뿐 아니라 **커밋 이력 전체**가 대상입니다. 전체 clone과 이관 대상 refs를 준비합니다. shallow clone이나 현재 파일만 검사한 결과는 이력 전체 통과가 아닙니다. 검사 명령 전체는 [AI 지시문](../prompts/migration.md)의 검증 하네스에 포함되어 있습니다. 스캔 실행 전에 연결된 검사 스크립트·의존성을 대상 작업 폴더에 준비하고 설치 승인을 확인합니다.
 
+검사 도구는 검증한 skill 번들이나 연결된 원본에서 대상의 `local-only/workshop-checks/`에 복사합니다. `local-only/`의 Git 제외 여부와 도구의 미추적 상태를 확인하고 새 clone에서도 다시 준비합니다. 제외 규칙 추가와 이미 추적 중인 도구의 정리는 승인받습니다. 실행 위치는 대상 저장소 루트이며 Git 제외를 검사 제외로 간주하지 않습니다. 기존 `scripts/`의 파일은 자동으로 이동·삭제하지 않습니다.
+
 점검은 세 가지입니다.
 
 첫째, **시크릿 스캔**입니다. gitleaks로 미커밋 파일을 포함한 현재 파일과 전체 이력에서 API 키·연결 문자열·토큰을 찾습니다.
 
 ```bash
-python3 scripts/workshop_checks.py 1
+python3 local-only/workshop-checks/workshop_checks.py 1
 ```
 
 둘째, **개인 리소스 식별자 스캔**입니다. 현재 파일과 이력에서 Azure AI·APIM·ACR·Service Bus 엔드포인트, 이름이나 리소스 경로로 식별되는 구독·테넌트 ID를 찾습니다. 미지원 서비스 주소와 스크린샷은 별도 육안 검토가 필요합니다. 문서와 코드의 예시는 `<your-resource>` 같은 placeholder로 바꿉니다.
@@ -196,7 +202,7 @@ Azure-Samples 화면 상단에는 "중앙 관리 주체가 없고, 유지보수�
 | Fallback security group | 팀 security group | `[확인: 그룹 이름]` — 없으면 비워두고 생성 후 Change owners에서 추가 |
 | Open source release approval | **Yes, creating an open source-licensed project** | 공통. 아래 설명 참조 |
 | What type of open source project | **Sample code** | 공통 |
-| License | **MIT** | 공통. 문서용 CC BY-SA 4.0은 포털에 적지 않고 LICENSE-DOCS 파일로 넣음 |
+| License | **MIT** | 공통. 문서용 CC BY-SA 4.0은 포털에 적지 않음. 별도 문서 라이선스와 파일 생성이 승인되고 기존 고지로 충분하지 않을 때만 LICENSE-DOCS 추가 |
 | Did your team write all the code and assets? | 자체 제작 = Yes / 현지화·재작성 = No | 결정 시트의 `source` 값과 같음 |
 | Contains 3rd-party embedded code? | **No** | 공통. 외부 데이터셋·폰트·이미지를 리포에 넣지 않는 것이 규약 |
 | Contains Microsoft code owned by another team? | 자체 제작 = No / 현지화·재작성 = Yes + Details | Details 문안은 6-1-3 |
@@ -267,7 +273,7 @@ confidential information is included.
 
 포털 Overview에서 Direct Owners 2명, Service Tree "No Service", Classification "Non-Production"이 입력한 대로 기록됐는지 봅니다. Highlights의 Least privilege access와 Immutable OIDC subject는 신규 리포 기본값이 초록이라 조치가 필요 없습니다. 우측에 "Going public? Do not make this repository public yet" 경고가 떠 있는 것이 정상 상태입니다. 실행 검증과 심사 승인을 마칠 때까지 Private 상태를 유지합니다.
 
-Compliance 탭은 생성 시점에 경고가 없습니다. 이 탭은 파일 유무가 아니라 시크릿 노출·CodeQL 경고·권한 정책 위반을 알리는 용도입니다. LICENSE, LICENSE-DOCS, SECURITY.md, CODE_OF_CONDUCT.md, SUPPORT.md, CONTRIBUTING.md, README는 포털이 만들어 주지 않으므로 Phase 4에서 실제 파일과 정책을 확인해 누락을 보완합니다. GitHub 화면에 보이는 Code of Conduct는 Azure-Samples 조직의 기본 파일이 표시되는 것이지 리포 안의 파일이 아닙니다.
+Compliance 탭은 생성 시점에 경고가 없습니다. 이 탭은 파일 유무가 아니라 시크릿 노출·CodeQL 경고·권한 정책 위반을 알리는 용도입니다. LICENSE, SECURITY.md, CODE_OF_CONDUCT.md, SUPPORT.md, CONTRIBUTING.md, README와 조건부 문서 라이선스 파일은 포털이 만들어 주지 않습니다. Phase 4에서 실제 파일과 정책을 확인하고 적용 조건을 충족한 승인된 누락 파일만 보완합니다. LICENSE-DOCS나 외부 자료 고지 파일을 일괄 생성하지 않습니다. GitHub 화면에 보이는 Code of Conduct는 Azure-Samples 조직의 기본 파일이 표시되는 것이지 리포 안의 파일이 아닙니다.
 
 생성 다음 날 `microsoft-github-policy-service` 봇이 **"[Action Needed] This repo is inactive"** 이슈를 올립니다(첫 이관에서 실측: 생성 하루 뒤). 커밋이 `.gitignore` 하나뿐인 빈 리포를 archive 후보로 잡는 자동 정책이며, 6-1 상단의 archive 안내와 같은 장치입니다. 무시하면 안 되고, push가 끝난 뒤 이슈 본문의 지시대로 처리합니다(보통 이슈를 닫거나 댓글로 유지 의사를 남기면 됩니다). 리포 생성과 push 사이 간격을 짧게 잡을수록 이 이슈를 볼 일이 줄어듭니다.
 
