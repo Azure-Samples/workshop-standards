@@ -32,7 +32,7 @@ Node.js LTS와 npm이 필요합니다. 명령은 `npm skill`이 아니라 [Verce
 VS Code 터미널이나 PowerShell에서 다음 명령을 실행합니다.
 
 ```powershell
-npx skills add https://github.com/Azure-Samples/workshop-standards/releases/download/workshop-skill-v0.1.0-preview.2/workshop-standardization.zip --skill workshop-standardization --agent github-copilot --global --copy --yes
+npx skills add https://github.com/Azure-Samples/workshop-standards/releases/download/workshop-skill-v0.1.0-preview.3/workshop-standardization.zip --skill workshop-standardization --agent github-copilot --global --copy --yes
 ```
 
 `--global`은 여러 프로젝트에서 사용하는 개인용 설치입니다. `--copy`는 심볼릭 링크 대신 파일을 복사하고, `--yes`는 CLI의 확인 질문을 생략합니다. 설치 위치는 `%USERPROFILE%\.copilot\skills\workshop-standardization`입니다.
@@ -42,7 +42,7 @@ npx skills add https://github.com/Azure-Samples/workshop-standards/releases/down
 팀과 공유할 때는 대상 워크샵 폴더에서 `--global` 없이 실행합니다.
 
 ```powershell
-npx skills add https://github.com/Azure-Samples/workshop-standards/releases/download/workshop-skill-v0.1.0-preview.2/workshop-standardization.zip --skill workshop-standardization --agent github-copilot --copy --yes
+npx skills add https://github.com/Azure-Samples/workshop-standards/releases/download/workshop-skill-v0.1.0-preview.3/workshop-standardization.zip --skill workshop-standardization --agent github-copilot --copy --yes
 ```
 
 CLI는 `<워크샵 폴더>\.agents\skills\workshop-standardization`에 설치합니다. 프로젝트용 파일은 워크샵 저장소에 포함될 수 있으므로 커밋 전에 추가된 파일을 검토하세요. 개인용과 프로젝트용을 중복 설치하지 않습니다.
@@ -109,9 +109,9 @@ Git, Node.js나 npm 없이 설치하려면 ZIP을 내려받아 폴더를 복사�
 
 ### ZIP 다운로드와 압축 해제
 
-[설치용 ZIP 다운로드](https://github.com/Azure-Samples/workshop-standards/releases/download/workshop-skill-v0.1.0-preview.2/workshop-standardization.zip)를 선택해 `workshop-standardization.zip`을 저장합니다.
+[설치용 ZIP 다운로드](https://github.com/Azure-Samples/workshop-standards/releases/download/workshop-skill-v0.1.0-preview.3/workshop-standardization.zip)를 선택해 `workshop-standardization.zip`을 저장합니다.
 
-다운로드가 되지 않으면 [배포 페이지](https://github.com/Azure-Samples/workshop-standards/releases/tag/workshop-skill-v0.1.0-preview.2)를 열고 **Assets → workshop-standardization.zip**을 선택하세요. `Source code (zip)`은 저장소 전체 소스이므로 설치용 파일이 아닙니다.
+다운로드가 되지 않으면 [배포 페이지](https://github.com/Azure-Samples/workshop-standards/releases/tag/workshop-skill-v0.1.0-preview.3)를 열고 **Assets → workshop-standardization.zip**을 선택하세요. `Source code (zip)`은 저장소 전체 소스이므로 설치용 파일이 아닙니다.
 
 다운로드한 ZIP을 마우스 오른쪽 버튼으로 선택하고 **모두 압축 풀기**를 실행합니다. 압축을 푼 위치에서 다음 구조를 확인하세요.
 
